@@ -1,6 +1,6 @@
 subj = input('Please subject ID:', 's');
 % Make directory to save results
-paraDir = 'C:\Experiments\Agudemu\stimulus_TFS\stage-2\results\';
+paraDir = 'C:\Experiments\Agudemu\stimulus-TFS\stage-2\results\';
 if(~exist(strcat(paraDir,'\',subj),'dir'))
     mkdir(strcat(paraDir,'\',subj));
 end
