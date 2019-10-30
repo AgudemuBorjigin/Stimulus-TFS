@@ -1,17 +1,17 @@
 % mixing target and masker for different configurations
 fs = 44100;
 % CHANGE AS NEEDED
-configuration = 'pitch'; % 'pitch', 'space', 'anechoic', 'echo', 'sum'
+configuration = 'sum';
 rampdur = 0.01;
 t_onset = 0.8;
 
-SNRs = 12:-3:-3; % dB, change in 'target_masker.m' first
+SNRs = 10:-3:-5; % dB, change in 'target_masker.m' first
 N = [50, 50, 50, 50, 50, 50]; 
 num_snr = numel(SNRs);
 
 root_audios = '/Users/baoagudemu1/Desktop/Lab/Experiment/speechAudiofiles_stage2';
 
-if strcmp(configuration,'anechoic')
+if strcmp(configuration,'ref')
     num_trial = 0;
     for i = 1:num_snr
         for j = 1:N(i)
