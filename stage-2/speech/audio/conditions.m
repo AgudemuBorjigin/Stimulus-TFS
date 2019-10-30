@@ -16,7 +16,7 @@ if strcmp(configuration,'ref')
         for j = 1:N(i)
             num_trial = num_trial + 1;
             load(strcat(root_audios, '/target_masker/same_gender/trial', int2str(num_trial), '.mat'));
-            mixture(stim_tar, stim_same, configuration, SNRs(i),  strcat(int2str(SNRs(i)), 'dB_', int2str(j), '_'), target, wordlist, 1, fs, rampdur, root_audios);
+            mixture(stim_tar, stim_same, configuration, SNRs(i),  int2str(num_trial), target, wordlist, 1, fs, rampdur, root_audios);
         end
     end
 elseif strcmp(configuration, 'pitch')
@@ -25,7 +25,7 @@ elseif strcmp(configuration, 'pitch')
         for j = 1:N(i)
             num_trial = num_trial + 1;
             load(strcat(root_audios, '/target_masker/opposite_gender/trial', int2str(num_trial), '.mat'));
-            mixture(stim_tar, stim_opposite, configuration, SNRs(i), strcat(int2str(SNRs(i)), 'dB_', int2str(j), '_'), target, wordlist, 1, fs, rampdur, root_audios);
+            mixture(stim_tar, stim_opposite, configuration, SNRs(i), int2str(num_trial), target, wordlist, 1, fs, rampdur, root_audios);
         end
     end
 elseif strcmp(configuration, 'space')
