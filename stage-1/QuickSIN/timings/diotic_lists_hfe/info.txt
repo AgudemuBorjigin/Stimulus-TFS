@@ -1,0 +1,1 @@
+tracks 36-51 (lists 1-16); 30dB high frequency emphasis

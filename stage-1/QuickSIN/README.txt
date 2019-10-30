@@ -1,0 +1,1 @@
+To extract a speech and babble pair, go into the playback_functions directory, and then call read_quicksin(.).

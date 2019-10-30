@@ -1,0 +1,1 @@
+tracks 52-67 (lists 1-16); 30dB high frequency emphasis + 3 kHz LP
