@@ -17,7 +17,8 @@ Nup = 3; % Weighted 1-up-1down with weights of 3:1
 NmaxTrials = 80;
 NminTrials = 20;
 target = (randperm(NmaxTrials) > NmaxTrials/2); % randomizing target (containing FM) 
-dev_dir = randperm([ones(1, NmaxTrials/2), -1*ones(1, NmaxTrials/2)]); % randomizing target (containing FM) 
+dev_dir = [ones(1, NmaxTrials/2), -1*ones(1, NmaxTrials/2)];
+dev_dir = dev_dir(randperm(NmaxTrials)); % randomizing target (containing FM) 
 
 FsampTDT = 3; % 48828.125 Hz
 useTrigs = 0;
@@ -82,9 +83,9 @@ try
         end
         
         dummy = makeFMstim_tones(0, fc, fs, fm, dur, ramp);
-        sig_pos_dev = makeFMstim_tones(dev_dir(trialCount), fdev, fc, fs, fm,...
+        sig_pos_dev = makeFMstim_binaural(dev_dir(trialCount), fdev, fc, fs, fm,...
                 dur, ramp);
-        sig_neg_dev = makeFMstim_tones(-1 * dev_dir(trialCount), fdev, fc, fs, fm,...
+        sig_neg_dev = makeFMstim_binaural(-1 * dev_dir(trialCount), fdev, fc, fs, fm,...
                 dur, ramp);
         % AB: randomizing the order of playing FM and pure tones
         if(target(trialCount))
