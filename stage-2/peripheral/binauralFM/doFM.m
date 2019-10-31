@@ -9,7 +9,7 @@ subj = input('Please enter subject ID:', 's'); % AB: enter
 earflag = 1;
 nreps = 4;
 
-sID = strcat(subj, '_',earname);
+sID = strcat(subj);
 nBlocks = nreps * numel(fclist);
 for k = 1:numel(fclist)
     fc = fclist(k);

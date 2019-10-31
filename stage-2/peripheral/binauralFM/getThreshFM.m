@@ -2,7 +2,7 @@ function [respList, fdevList, thresh] = ...
     getThreshFM(sID,fc, blockNum, nBlocks,useTDT,...
     screenDist, screenWidth,buttonBox)
 %% Data storage directory
-paraDir = 'C:\AgudemuCode\stimulus-TFS\stage-2\peripheral\binarualFM\';
+paraDir = 'C:\Experiments\Agudemu\stimulus-TFS\stage-2\peripheral\binauralFM\';
 addpath(genpath(paraDir));
 if(~exist(strcat(paraDir,'\subjResponses\',sID),'dir'))
     mkdir(strcat(paraDir,'\subjResponses\',sID));
