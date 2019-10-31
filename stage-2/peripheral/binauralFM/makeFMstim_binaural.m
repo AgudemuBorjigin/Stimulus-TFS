@@ -1,4 +1,4 @@
-function [FM, t] = makeFMstim_tones(dev_dir, fdev, fc, fs, fm, dur, ramp)
+function [FM, t] = makeFMstim_binaural(dev_dir, fdev, fc, fs, fm, dur, ramp)
 
 % USAGE:
 %   [FM] = makeFMstim_tones(m, fc, fs, fm, fdev, fmlow, fmhi, TFR, flankdist, dur, ramp)
@@ -20,7 +20,7 @@ function [FM, t] = makeFMstim_tones(dev_dir, fdev, fc, fs, fm, dur, ramp)
 t = 0:(1/fs):(dur - 1/fs);
 
 
-phi = 1.5*pi; % fm phase is set to 1.5 pi
+phi = 0; % AB edited (Strelcyk had 1.5*pi)
 
 FM = sin(2*pi*fc*t+(dev_dir*fdev/fm)*sin(2*pi*fm*t+phi));
 

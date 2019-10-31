@@ -29,11 +29,11 @@ try
     fs = 48828.125;
     dur = 0.5;   
     fm = 2; 
-    ramp = 0.005; % gating with 50-ms raised-cosine ramps
+    ramp = 0.025; % gating with 25-ms raised-cosine ramps
     L = 70; % fixed value at 70 dB SPL
-    fdev = 17; % starting frequency deviation value, big enough to make sure the subject understands the task
-    stepDown = -1.5; % AB: stepDown from initail fdev 
-    stepUp = Nup*(-stepDown);
+    fdev = 16; % starting frequency deviation value, big enough to make sure the subject understands the task
+    stepDown = db2mag(-4); % AB: stepDown from initail fdev 
+    stepUp = db2mag(-stepDown)*Nup;
     
     if(useTDT)
         %Clearing I/O memory buffers: AB
@@ -219,10 +219,10 @@ try
         end
         
         if(correct)
-            fdev = fdev + stepDown; % AB: changed from m to fdev
+            fdev = fdev*stepDown; % AB: changed from m to fdev
         else
             
-            fdev = fdev + stepUp; % AB: changed from m to fdev
+            fdev = fdev*stepUp; % AB: changed from m to fdev
             
         end
         
@@ -254,8 +254,8 @@ try
         end
         
         if(nReversals >= 4)
-            stepDown = -0.5;
-            stepUp = Nup*(-stepDown);
+            stepDown = db2mag(-2);
+            stepUp = Nup*db2mag(-stepDown);
         end
         
         
