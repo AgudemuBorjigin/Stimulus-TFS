@@ -98,7 +98,8 @@ try
         % by db(scale*sqrt(2)/0.95).
         
         digDrop = 0; % How much to drop digitally
-
+        wavedata = y * db2mag(-1 * digDrop); % signal remains the same when digDrop = 0
+        
         %Start dropping from maximum RMS (actual RMS not peak-equivalent)
         if rightOrLeft(trialCount) == 1
             % correct answer is 1
@@ -111,7 +112,6 @@ try
             drop_right = sens + 10.5236 - (L-ILD/2) - digDrop + db(scale*sqrt(2)/0.95);
             answer = 2;
         end
-        wavedata = y * db2mag(-1 * digDrop); % signal remains the same when digDrop = 0
         %-----------------------------------------
         % Attenuate both sides, just in case
         invoke(PS.RP, 'SetTagVal', 'attA', drop_left);
