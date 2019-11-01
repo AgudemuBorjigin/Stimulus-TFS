@@ -17,7 +17,7 @@ for k = 1:numel(fclist)
         blockNum = (k-1)*numel(fclist) + p;
         
         [respList, ITDList, thresh] = getThreshITD3down1up(sID,fc, blockNum,...
-            nBlocks, rightOrLeft{p}, NmaxTrials, NminTrials, useTDT,screenDist,screenWidth,buttonBox);
+            nBlocks, rightOrLeft{p}, useTDT,screenDist,screenWidth,buttonBox);
         fprintf(1, 'Threshold at %d kHz is %f dB\n', fc, thresh);
     end
 end

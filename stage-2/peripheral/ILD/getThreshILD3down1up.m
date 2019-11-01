@@ -1,8 +1,9 @@
-function [respList, fdevList, thresh] = ...
-    getThreshFM(sID,fc, blockNum, nBlocks,e,useTDT,...
+function [respList, ILDList, thresh] = ...
+    getThreshILD3down1up(sID,fc, blockNum, nBlocks, rightOrLeft,useTDT,...
     screenDist, screenWidth,buttonBox)
+
 %% Data storage directory
-paraDir = 'C:\AgudemuCode\stimulus-TFS\stage-2\peripheral\binarualFM\';
+paraDir = 'C:\Experiments\Agudemu\stimulus-TFS\stage-2\peripheral\ILD\';
 addpath(genpath(paraDir));
 if(~exist(strcat(paraDir,'\subjResponses\',sID),'dir'))
     mkdir(strcat(paraDir,'\subjResponses\',sID));
@@ -10,36 +11,29 @@ end
 respDir = strcat(paraDir,'\subjResponses\',sID,'\');
 
 %% Variable initialization 
-feedback = 1;
+feedback = 1; 
 feedbackDuration = 0.2;
+ 
+step = 2; % initial step size
 
-Nup = 3; % Weighted 1-up-1down with weights of 3:1
-NmaxTrials = 80;
-NminTrials = 20;
-target = (randperm(NmaxTrials) > NmaxTrials/2); % randomizing target (containing FM) 
-dev_dir = randperm([ones(1, NmaxTrials/2), -1*ones(1, NmaxTrials/2)]); % randomizing target (containing FM) 
-
-FsampTDT = 3; % 48828.125 Hz
+FsampTDT = 3; % 100 KHz
 useTrigs = 0;
 PS = psychStarter(useTDT,screenDist,screenWidth,useTrigs,FsampTDT); %,whichScreen); AB
 
 %%
 try
-    fs = 48828.125;
-    dur = 0.5;   
-    fm = 2; 
-    ramp = 0.005; % gating with 50-ms raised-cosine ramps
-    L = 70; % fixed value at 70 dB SPL
-    fdev = 17; % starting frequency deviation value, big enough to make sure the subject understands the task
-    stepDown = -1.5; % AB: stepDown from initail fdev 
-    stepUp = Nup*(-stepDown);
+    fs = 48828.125; % CHANGE AS NEEDED
+    dur = 0.4;
+    ramp = 0.02; % gating with 20-ms raised-cosine ramps
+    L = 70; % reference level
+    ILD = 20; % starting ILD value in dB
     
     if(useTDT)
         %Clearing I/O memory buffers: AB
         invoke(PS.RP,'ZeroTag','datainL');
         invoke(PS.RP,'ZeroTag','datainR');
     end
-    %% AB: to show information about the current repetition on screen to the subject
+    %% to show information about the current repetition on screen to the subject, 
     % and to get the subject's response to proceed the task
     textlocH = PS.rect(3)/4;
     textlocV = PS.rect(4)/3;
@@ -65,13 +59,14 @@ try
     
     converged = 0; % flag to determine when to stop getting threshold
     respList = [];
-    fdevList = [];
+    ILDList = [];
     trialCount = 0;
     correctCount = 0;
-    
+    reps = 0;
     while(~converged)
-        % target (FM) and dummy non-target (pure tone)
-        renderVisFrame(PS,'FIX');
+        % ILDs with different directions in two itervals (pure tone)
+        
+        renderVisFrame(PS,'FIX'); 
         Screen('Flip',PS.window);
         
         trialCount = trialCount + 1;
@@ -81,37 +76,19 @@ try
             WaitSecs(0.5);
         end
         
-        dummy = makeFMstim_tones(0, fc, fs, fm, dur, ramp);
-        sig_pos_dev = makeFMstim_tones(dev_dir(trialCount), fdev, fc, fs, fm,...
-                dur, ramp);
-        sig_neg_dev = makeFMstim_tones(-1 * dev_dir(trialCount), fdev, fc, fs, fm,...
-                dur, ramp);
-        % AB: randomizing the order of playing FM and pure tones
-        if(target(trialCount))
-            % Correct answer is "1"
-            answer = 1;
-            y_left = sig_pos_dev;
-            y_right = sig_neg_dev;
-            z_left = dummy;
-            z_right = dummy;
-        else
-            % Correct answer is "2"
-            answer = 2;
-            z_left = sig_pos_dev;
-            z_right = sig_neg_dev;
-            y_left = dummy;
-            y_right = dummy;
-        end
-        scale = (rms(sig) + rms(dummy))/2;
-        y = [y_left; y_right];
-        z = [z_left; z_right];
+        t = 0:(1/fs):(dur - 1/fs);
+        sig = sin(2*pi*fc*t);
+        scale = rms(sig);
+        sig = scaleSound(sig);
+        sig = rampsound(sig, fs, ramp);
+        y = sig;
         
         %% AB
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Clear Up buffers for 1st stim
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
        
-        sens = phoneSens(fc); % in dB SPL / 0 dBV (frequency specific)
+        sens = phoneSens_ER2(fc); % in dB SPL / 0 dBV (frequency specific)
         % Without attenuation, RZ6 gives 10.5236 dBV (matlab is restricted
         % to +/- 0.95 by scaleSound). So you would get sens + 10.5236 dB
         % SPL for pure tones occupying full range in MATLAB. To get a level
@@ -121,60 +98,62 @@ try
         % by db(scale*sqrt(2)/0.95).
         
         digDrop = 0; % How much to drop digitally
-        drop = sens + 10.5236 - L - digDrop + db(scale*sqrt(2)/0.95);
+
         %Start dropping from maximum RMS (actual RMS not peak-equivalent)
-        wavedata = y * db2mag(-1 * digDrop); % AB: signal remains the same when digDrop = 0
+        if rightOrLeft(trialCount) == 1
+            % correct answer is 1
+            drop_left = sens + 10.5236 - (L-ILD/2) - digDrop + db(scale*sqrt(2)/0.95);
+            drop_right = sens + 10.5236 - (L+ILD/2) - digDrop + db(scale*sqrt(2)/0.95);
+            answer = 1;
+        else
+            % correct answer is 2
+            drop_left = sens + 10.5236 - (L+ILD/2) - digDrop + db(scale*sqrt(2)/0.95);
+            drop_right = sens + 10.5236 - (L-ILD/2) - digDrop + db(scale*sqrt(2)/0.95);
+            answer = 2;
+        end
+        wavedata = y * db2mag(-1 * digDrop); % signal remains the same when digDrop = 0
         %-----------------------------------------
         % Attenuate both sides, just in case
-        invoke(PS.RP, 'SetTagVal', 'attA', drop);
-        invoke(PS.RP, 'SetTagVal', 'attB', drop);
+        invoke(PS.RP, 'SetTagVal', 'attA', drop_left);
+        invoke(PS.RP, 'SetTagVal', 'attB', drop_right);
         
         
         % The trial flow:
         if useTDT
             %Load data onto RZ6
             invoke(PS.RP, 'SetTagVal', 'nsamps', size(wavedata,2));
-            invoke(PS.RP, 'WriteTagVEX', 'datainL', 0, 'F32', wavedata(1, :)); %AB: looks like left and right channels
-            invoke(PS.RP, 'WriteTagVEX', 'datainR', 0, 'F32', wavedata(2, :));
+            invoke(PS.RP, 'WriteTagVEX', 'datainL', 0, 'F32', wavedata); %AB: looks like left and right channels
+            invoke(PS.RP, 'WriteTagVEX', 'datainR', 0, 'F32', wavedata);
             WaitSecs(0.1);
-            %Start playing from the buffer:
-            Screen('DrawText',PS.window,'1',PS.rect(3)/2 - 20,PS.rect(4)/2-20,PS.white);
-            Screen('Flip',PS.window);
             invoke(PS.RP, 'SoftTrg', 1); %Playback trigger
         else
             sound(y,fs);
         end
         
-        WaitSecs(1.4); % should consider stimulus duration 
+        WaitSecs(0.2+dur);
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Setup 2nd stim
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        digDrop = 0;
-        drop = sens + 10.5236 - L - digDrop + db(scale*sqrt(2)/0.95);
-        %Start dropping from maximum RMS (actual RMS not peak-equivalent)
-        wavedata = z * db2mag(-1 * digDrop);
         % Attenuate both sides, just in case
-        invoke(PS.RP, 'SetTagVal', 'attA', drop);
-        invoke(PS.RP, 'SetTagVal', 'attB', drop);
+        invoke(PS.RP, 'SetTagVal', 'attA', drop_right);
+        invoke(PS.RP, 'SetTagVal', 'attB', drop_left);
         %-----------------------------------------
         
         if useTDT
             %Load data onto RZ6
             invoke(PS.RP, 'SetTagVal', 'nsamps', size(wavedata,2));
-            invoke(PS.RP, 'WriteTagVEX', 'datainL', 0, 'F32', wavedata(1, :));
-            invoke(PS.RP, 'WriteTagVEX', 'datainR', 0, 'F32', wavedata(2, :));
+            invoke(PS.RP, 'WriteTagVEX', 'datainL', 0, 'F32', wavedata);
+            invoke(PS.RP, 'WriteTagVEX', 'datainR', 0, 'F32', wavedata);
             WaitSecs(0.1);
-            %Start playing from the buffer:
-            Screen('DrawText',PS.window,'2',PS.rect(3)/2-20,PS.rect(4)/2-20,PS.white);
-            Screen('Flip',PS.window);
             invoke(PS.RP, 'SoftTrg', 1); %Playback trigger
         else
-            sound(z,fs);
+            sound(y,fs);
         end
         
-        WaitSecs(1); % should consider stimulus duration 
+        WaitSecs(0.5+dur);
+        
         %%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %  Response Frame
@@ -191,17 +170,17 @@ try
         fprintf(1,'\n Target = %s, Response = %s',num2str(answer),num2str(resp));
         if((numel(resp)>=1) && ((answer - resp(end)) == 0))
             fprintf(1,'..which is correct!\n');
-            respList = [respList, 1];
+            respList = [respList, 1]; %#ok<AGROW>
             correct = 1;
-            fdevList = [fdevList, fdev]; 
+            ILDList = [ILDList, ILD];  %#ok<AGROW>
         else
             fprintf(1,'..which is Wrong!\n');
-            respList = [respList, 0];
+            respList = [respList, 0]; %#ok<AGROW>
             correct = 0;
-            fdevList = [fdevList, fdev]; 
+            ILDList = [ILDList, ILD];  %#ok<AGROW>
         end
         
-        %%
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %  Feedback Frame
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -216,50 +195,55 @@ try
                 
             end
         end
-        
-        if(correct)
-            fdev = fdev + stepDown; % AB: changed from m to fdev
+   
+        if trialCount >=3
+            if respList(trialCount)
+                if (respList(trialCount-1) && respList(trialCount-2)) && (reps == 2)
+                    ILD = ILD - step;
+                    reps = 0;
+                else
+                    reps = reps + 1;
+                end
+            else
+                ILD = ILD + step;
+                reps = 0;
+            end
         else
-            
-            fdev = fdev + stepUp; % AB: changed from m to fdev
-            
+            if respList(trialCount)
+                reps = reps + 1;
+            else
+                ILD = ILD + step;
+                reps = 0;
+            end
         end
-        
-
-        if( fdev < 0)
-            fdev = 0;
-            % fedv = fdev + stepUp; % not sure if this is necessary
-        end
-        
-
         
         Screen('Flip',PS.window);
         WaitSecs(feedbackDuration + rand*0.1);
         
         % Counting Reversals
+        changes = [0, sign(diff(ILDList))];
         revList = [];
-        downList = [];
-        upList = [];
-        nReversals = 0;
-        for k = 3:numel(fdevList)
-            if((fdevList(k-1) > fdevList(k)) && (fdevList(k-1) > fdevList(k-2)))
-                nReversals = nReversals + 1;  revList = [revList, (k-1)];
-                downList = [downList, (k-1)];
-            end
-            if((fdevList(k-1) < fdevList(k)) && (fdevList(k-1) < fdevList(k-2)))
-                nReversals = nReversals + 1;  revList = [revList, (k-1)];
-                upList = [upList, (k-1)];
+        nonzero = find(abs(changes));
+
+        for k = 2:numel(nonzero)
+            if changes(nonzero(k)) ~= changes(nonzero(k-1))
+                revList = [revList, nonzero(k)]; %#ok<AGROW>
             end
         end
-        
-        if(nReversals >= 4)
-            stepDown = -0.5;
-            stepUp = Nup*(-stepDown);
+        nReversals = numel(revList);
+                
+
+        if nReversals == 1
+            step = 1;
+        elseif nReversals == 2
+            step = 1;
+        elseif nReversals >= 3
+            step = 0.5;
+        else
         end
         
         
-        if ((nReversals >= 11) && (trialCount > NminTrials)) || ...
-                trialCount >= NmaxTrials
+        if nReversals >= 11
             converged = 1;
         else
             converged = 0;
@@ -267,7 +251,8 @@ try
         
     end
     
-    thresh = median(fdevList(upList)) * 0.25 + 0.75 * median(fdevList(downList)); %#ok<*AGROW>
+    % thresh = geomean(ILDList(revList((end-7):end)));
+    thresh = median(ILDList(upList)) * 0.25 + 0.75 * median(ILDList(downList)); %#ok<*AGROW>
     
     
     fprintf(2,'\n###### THRESHOLD FOR THIS BLOCK IS %f\n',thresh);
@@ -280,7 +265,7 @@ try
     datetag(strfind(datetag,':')) = '_';
     fname_resp = strcat(respDir,sID,'_',num2str(fc),...
         'Hz_', datetag,'.mat');
-    save(fname_resp,'fdevList','respList','thresh','fc');
+    save(fname_resp,'ILDList','respList','thresh','fc', 'revList');
     
     
     % Display end of block
@@ -318,7 +303,7 @@ catch me%#ok<CTCH>
         datetag(strfind(datetag,':')) = '_';
         fname_resp = strcat(respDir,sID,'_',num2str(fc),...
             'Hz_crash_',datetag,'.mat');
-        save(fname_resp,'fdevList','respList','fc');
+        save(fname_resp,'ITDList','respList','fc');
     end
     % Restore preferences
     Screen('Preference', 'VisualDebugLevel', PS.oldVisualDebugLevel);

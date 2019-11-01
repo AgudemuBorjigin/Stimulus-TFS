@@ -1,30 +1,26 @@
 wordlists = 1:50;
+targets = 1:6;
 nwordsperlist = 6;
 nlists = numel(wordlists);
 % CHANGE AS NEEDED
-N = [50, 50, 50, 50, 50, 50]; % Number of trials per SNR (variable), make sure the sum is divisible by 6, nSNRs, and 50
+N = [10, 10, 10, 10, 10]; % Number of trials per SNR (variable), make sure the sum is divisible by 50 to cover all the word lists
 totaltrials = sum(N);
 
 % CHANGE AS NEEDED: setting random generator seed and state
 load('s.mat'); rng(s);
 
-targets = repmat(1:nwordsperlist, 1, (totaltrials/nwordsperlist));
-targets = targets(randperm(totaltrials));
+targets = targets(randi(nwordsperlist, [1, totaltrials]));
 
-% The commented code below does not guarantee even distribution
-% wordlists = wordlists(randi(numel(wordlists), [1, totaltrials]));
+% this randomization guarentees equal distribution of each element in
+% wordlists
 wordlists = repmat(1:nlists, 1, (totaltrials/nlists));
 wordlists = wordlists(randperm(totaltrials));
 
-% Exclude M5 because of different naming convention of files and to balance
-% male and female voices.
-% speakers = speakers(randi(numel(speakers), [1, totaltrials]));
+% Exclude M5 because of different naming convention of files
 speakers_target = {'F1', 'F2', 'F3', 'M1', 'M2', 'M3'};
-ind_speaker = repmat(1:numel(speakers_target), 1, (totaltrials/numel(speakers_target)));
-ind_speaker = ind_speaker(randperm(totaltrials));
-speakers_target = speakers_target(ind_speaker);
+speakers_target = speakers_target(randi(numel(speakers_target), [1, totaltrials]));
 
-% grouping all female and male speakers from Harvard sentences
+% separately grouping all female and male speakers from Harvard sentences
 root_audios = '/Users/baoagudemu1/Desktop/Lab/Experiment/speechAudiofiles_stage2';
 speaker_dir = dir(strcat(root_audios, '/harvard_sentences'));
 speakers_masker = {speaker_dir.name};
@@ -32,10 +28,10 @@ count_f = 0; count_m = 0;
 for i = 1:numel(speakers_masker)
     if ~isempty(strfind(speakers_masker{i}, 'F'))
         count_f = count_f + 1;
-        speakers_female{count_f} = speakers_masker{i};  %#ok<SAGROW>
+        speakers_masker_f{count_f} = speakers_masker{i};  %#ok<SAGROW>
     elseif ~isempty(strfind(speakers_masker{i}, 'M'))
         count_m = count_m + 1;
-        speakers_male{count_m} = speakers_masker{i};  %#ok<SAGROW>
+        speakers_masker_m{count_m} = speakers_masker{i};  %#ok<SAGROW>
     end
 end
 
@@ -46,33 +42,34 @@ end
 num_interferer = 4;
 num_target = numel(speakers_target);
 for i = 1:num_target
-    speakers_male = speakers_male(randperm(numel(speakers_male)));
-    speakers_female = speakers_female(randperm(numel(speakers_female)));
+    speakers_masker_m = speakers_masker_m(randperm(numel(speakers_masker_m)));
+    speakers_masker_f = speakers_masker_f(randperm(numel(speakers_masker_f)));
     if ~isempty(strfind(speakers_target{i}, 'F'))
         for j = 1:num_interferer
-            speakers_same{i, j} = speakers_female{j};  %#ok<SAGROW>
-            speakers_opposite{i, j} = speakers_male{j}; %#ok<SAGROW>
+            speakers_same{i, j} = speakers_masker_f{j};  %#ok<SAGROW>
+            speakers_opposite{i, j} = speakers_masker_m{j}; %#ok<SAGROW>
         end
     elseif ~isempty(strfind(speakers_target{i}, 'M'))
         for j = 1:num_interferer
-            speakers_same{i, j} = speakers_male{j};
-            speakers_opposite{i, j} = speakers_female{j};
+            speakers_same{i, j} = speakers_masker_m{j};
+            speakers_opposite{i, j} = speakers_masker_f{j};
         end 
     end
 end
 
-% sentences for maskers across trials
+% the names of the txt files of masker sentences across trials
 sentences_dir = dir(strcat(root_audios, '/harvard_sentences/transcripts/*.txt'));
 sentences = {sentences_dir.name};
 for i = 1:num_target
     sentences_temp = sentences(randperm(numel(sentences)));
     for j = 1:num_interferer
         sentences_mix_temp = sentences_temp{j}; 
-        sentences_mix{i, j} = sentences_mix_temp(1:end-4); %#ok<SAGROW>
+        sentences_mix{i, j} = sentences_mix_temp(1:end-4); %#ok<SAGROW> % excluding .txt file extension 
     end
 end
 
-% final audio names containing speaker ID and sentence name
+% final audio names containing speaker ID and sentence txt file name, for
+% extracting audios
 for i = 1:num_target
     for j = 1:num_interferer
         audio_name_same{i, j} = strcat(speakers_same{i, j}, '_', sentences_mix{i, j}, '.wav'); %#ok<SAGROW>
@@ -80,12 +77,13 @@ for i = 1:num_target
     end
 end
 
-% mixing audio signals for masker
+% mixing audio signals to generate masker
 for i = 1:num_target
-    speakers_male_temp = speakers_male;
-    speakers_female_temp = speakers_female;
+    speakers_male_temp = speakers_masker_m;
+    speakers_female_temp = speakers_masker_f;
     % creating pool of speakers excluding current mixture of speakers for
-    % back up 
+    % replacement in case a certain speaker in the original
+    % mixture did not record the chosen sentence
     for j = 1:num_interferer
         speaker_same_temp = speakers_same{i, j};
         speaker_opposite_temp = speakers_opposite{i, j};

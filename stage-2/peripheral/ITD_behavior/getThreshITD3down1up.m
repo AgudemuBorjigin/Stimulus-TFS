@@ -1,9 +1,9 @@
 function [respList, ITDList, thresh] = ...
-    getThreshITD3down1up(sID,fc, blockNum, nBlocks, rightOrLeft, NmaxTrials, NminTrials,useTDT,...
+    getThreshITD3down1up(sID,fc, blockNum, nBlocks, rightOrLeft,useTDT,...
     screenDist, screenWidth,buttonBox)
 
 %% Data storage directory
-paraDir = 'C:\AgudemuCode\Stimulus\ITD_3down1up\';
+paraDir = 'C:\Experiments\Agudemu\stimulus-TFS\stage-2\ITD_behavior\';
 addpath(genpath(paraDir));
 if(~exist(strcat(paraDir,'\subjResponses\',sID),'dir'))
     mkdir(strcat(paraDir,'\subjResponses\',sID));

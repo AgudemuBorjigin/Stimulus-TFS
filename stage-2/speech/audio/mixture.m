@@ -1,5 +1,6 @@
-function mixture(stim_tar, stim_masker, configuration, SNR, id_trial, target, wordlist, t_mskonset, fs, rampdur, root_audios) %#ok<INUSL>
+function mixture(stim_tar, stim_masker, b, configuration, SNR, id_trial, target, wordlist, t_mskonset, fs, rampdur, root_audios) %#ok<INUSL>
 % masker starts after the prompt for target 
+stim_masker = filter(b, 1, stim_masker);
 stim_masker = [zeros(t_mskonset*fs, 1); stim_masker];
 stim_masker = sigNorm(stim_masker);
 stim_tar = [stim_tar; zeros(length(stim_masker) - length(stim_tar), 1)];

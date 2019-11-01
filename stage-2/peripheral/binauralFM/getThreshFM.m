@@ -112,7 +112,7 @@ try
         % Clear Up buffers for 1st stim
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
        
-        sens = phoneSens(fc); % in dB SPL / 0 dBV (frequency specific)
+        sens = phoneSens_ER2(fc); % in dB SPL / 0 dBV (frequency specific)
         % Without attenuation, RZ6 gives 10.5236 dBV (matlab is restricted
         % to +/- 0.95 by scaleSound). So you would get sens + 10.5236 dB
         % SPL for pure tones occupying full range in MATLAB. To get a level
@@ -268,8 +268,8 @@ try
         
     end
     
-    thresh = median(fdevList(upList)) * 0.25 + 0.75 * median(fdevList(downList)); %#ok<*AGROW>
-    
+    % thresh = median(fdevList(upList)) * 0.25 + 0.75 * median(fdevList(downList)); %#ok<*AGROW>
+    thresh = geomean(fdevList(revList((end-7):end)));
     
     fprintf(2,'\n###### THRESHOLD FOR THIS BLOCK IS %f\n',thresh);
     toc(tstart);

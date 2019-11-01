@@ -1,25 +1,25 @@
-fclist = 500;
+fclist = 6000;
 
 useTDT = 1;
 screenDist = 0.4;
 screenWidth = 0.3;
 buttonBox = 1;
+% prompt
 subj = input('Please enter subject ID:', 's');
-nreps = 8;
+sID = strcat(subj, '_DEMO');
 
-load('startingDirection.mat');
+load('startingDirection_demo.mat');
 
-sID = strcat(subj, '_3down1up');
+nreps = 1;
 nBlocks = nreps * numel(fclist);
 for k = 1:numel(fclist)
     fc = fclist(k);
     for p = 1:nreps
         blockNum = (k-1)*numel(fclist) + p;
         
-        [respList, ITDList, thresh] = getThreshITD3down1up(sID,fc, blockNum,...
+        [respList, ITDList, thresh] = getThreshILD3down1up(sID,fc, blockNum,...
             nBlocks, rightOrLeft{p}, useTDT,screenDist,screenWidth,buttonBox);
-        fprintf(1, 'Threshold at %d Hz is %.1f us\n', fc, thresh*1e6);
+        fprintf(1, 'Threshold at %d kHz is %f dB\n', fc, thresh);
     end
 end
-
 
