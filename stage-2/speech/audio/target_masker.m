@@ -1,9 +1,9 @@
 wordlists = 1:50;
+nlists = numel(wordlists);
 targets = 1:6;
 nwordsperlist = 6;
-nlists = numel(wordlists);
 % CHANGE AS NEEDED
-N = [10, 10, 10, 10, 10]; % Number of trials per SNR (variable), make sure the sum is divisible by 50 to cover all the word lists
+N = [10, 10, 10, 10, 10, 10]; % Number of trials per SNR (variable)
 totaltrials = sum(N);
 
 % CHANGE AS NEEDED: setting random generator seed and state
@@ -13,7 +13,12 @@ targets = targets(randi(nwordsperlist, [1, totaltrials]));
 
 % this randomization guarentees equal distribution of each element in
 % wordlists
-wordlists = repmat(1:nlists, 1, (totaltrials/nlists));
+if fix(totaltrials/nlists) < 1
+    wordlists = 1:totaltrials;
+else
+    wordlists = repmat(1:nlists, 1, fix(totaltrials/nlists));
+    wordlists = [wordlists, 1:mod(totaltrials,nlists)];
+end
 wordlists = wordlists(randperm(totaltrials));
 
 % Exclude M5 because of different naming convention of files

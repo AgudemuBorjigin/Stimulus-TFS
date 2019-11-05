@@ -4,9 +4,32 @@ rampdur = 0.01;
 t_onset = 0.8;
 % CHANGE AS NEEDED
 root_audios = '/Users/baoagudemu1/Desktop/Lab/Experiment/speechAudiofiles_stage2';
+
 configuration = 'sum'; % 'pitch', 'space', 'anechoic', 'echo', 'sum'
-SNRs = 12:-3:0; % dB, change in 'target_masker.m' first
-N = [10, 10, 10, 10, 10]; 
+flag_c = 1;
+while flag_c
+    switch configuration
+        case 'anechoic'
+            SNRs = 4:-2:-6; % dB, change in 'target_masker.m' first
+            flag_c = 0;
+        case 'pitch'
+            SNRs = 10:-2:0; % dB, change in 'target_masker.m' first
+            flag_c = 0;
+        case 'space'
+            SNRs = 8:-2:-2; % dB, change in 'target_masker.m' first
+            flag_c = 0;
+        case 'echo'
+            SNRs = 10:-2:0; % dB, change in 'target_masker.m' first
+            flag_c = 0;
+        case 'sum'
+            SNRs = 2:-2:-8; % dB, change in 'target_masker.m' first
+            flag_c = 0;
+        otherwise
+            fprintf(2, 'Unrecognized configuration type! Try again!\n');
+    end
+end
+
+N = [10, 10, 10, 10, 10, 10]; 
 num_trials = sum(N);
 num_snr = numel(SNRs);
 
@@ -62,14 +85,14 @@ elseif strcmp(configuration, 'sum')
     end
 end
 
-% % ordered snrs for each repetition
-% SNRcounts = zeros(nconds, 1);
-% SNRlist = [];
-% for rep = 1:max(N)
-%     for k = 1:nconds
-%         if SNRcounts(k) <= N(k)
-%             SNRlist = [SNRlist, SNRs(k)]; %#ok<AGROW>
-%             SNRcounts(k) = SNRcounts(k) + 1;
-%         end
-%     end
-% end
+% ordered snrs for each repetition
+SNRcounts = zeros(nconds, 1);
+SNRlist = [];
+for rep = 1:max(N)
+    for k = 1:nconds
+        if SNRcounts(k) <= N(k)
+            SNRlist = [SNRlist, SNRs(k)]; %#ok<AGROW>
+            SNRcounts(k) = SNRcounts(k) + 1;
+        end
+    end
+end

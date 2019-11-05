@@ -12,7 +12,7 @@ while flag_cond
 end
 
 % Make directory to save results
-paraDir = 'C:\Experiments\Agudemu\stimulus-TFS\stage-2\speech\results\';
+paraDir = strcat('C:\Experiments\Agudemu\stimulus-TFS\stage-2\speech\results\', condition, '\');
 if(~exist(strcat(paraDir,'\',subj),'dir'))
     mkdir(strcat(paraDir,'\',subj));
 end
