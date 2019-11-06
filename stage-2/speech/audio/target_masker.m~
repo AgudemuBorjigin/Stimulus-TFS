@@ -7,7 +7,7 @@ N = [30, 30, 30, 30, 30, 30]; % Number of trials per SNR (variable)
 totaltrials = sum(N);
 
 % CHANGE AS NEEDED: setting random generator seed and state, not needed for
-% different randomization 
+% different randomization acro
 % load('s.mat'); rng(s);
 
 targets = targets(randi(nwordsperlist, [1, totaltrials]));
