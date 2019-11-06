@@ -1,22 +1,22 @@
-subj = 'S190';
-cond = 'sum';
+subj = 'S129';
+cond = 'space';
 flag_c = 1;
 while flag_c
     switch cond
         case 'anechoic'
-            SNRs = -6:2:4;
+            SNRs = -7:2:3;
             flag_c = 0;
         case 'pitch'
             SNRs = 0:2:10;
             flag_c = 0;
         case 'space'
-            SNRs = -2:2:8; 
+            SNRs = -6:2:4; 
             flag_c = 0;
         case 'echo'
-            SNRs = 0:2:10; 
+            SNRs = -2:2:8; 
             flag_c = 0;
         case 'sum'
-            SNRs = -8:2:2;
+            SNRs = -7:2:3;
             flag_c = 0;
         otherwise
             fprintf(2, 'Unrecognized configuration type! Try again!\n');
