@@ -1,22 +1,22 @@
-subj = 'S129';
-cond = 'space';
+subj = 'S194';
+cond = 'sum';
 flag_c = 1;
 while flag_c
     switch cond
         case 'anechoic'
-            SNRs = -7:2:3;
+            SNRs = -12:3:9;
             flag_c = 0;
         case 'pitch'
             SNRs = 0:2:10;
             flag_c = 0;
         case 'space'
-            SNRs = -6:2:4; 
+            SNRs = -9:3:12; 
             flag_c = 0;
         case 'echo'
-            SNRs = -2:2:8; 
+            SNRs = -9:3:12; 
             flag_c = 0;
         case 'sum'
-            SNRs = -7:2:3;
+            SNRs = -12:3:9;
             flag_c = 0;
         otherwise
             fprintf(2, 'Unrecognized configuration type! Try again!\n');
@@ -35,7 +35,7 @@ for k = 1:numel(SNRs)
     snr_label{k} = num2str(SNRs(k)); %#ok<SAGROW>
 end
 errorbar(SNRs, score, scorestd, 'xb', 'linew', 2);
-title(cond);
+title(strcat(cond, '-', subj));
 xlabel('SNR (dB)', 'fontsize', 16);
 ylabel('Proportion Correct', 'fontsize', 16);
 grid on;
