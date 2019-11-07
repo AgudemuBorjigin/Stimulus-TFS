@@ -1,6 +1,3 @@
-% NOTE: run "target_masker.m" first before running this scrip for different
-% randomization across conditions
-target_masker;
 % mixing target and masker for different configurations
 fs = 44100;
 rampdur = 0.01;
@@ -8,33 +5,39 @@ t_onset = 0.8;
 % CHANGE AS NEEDED
 root_audios = '/Users/baoagudemu1/Desktop/Lab/Experiment/speechAudiofiles_stage2';
 
-configuration = 'space'; % 'pitch', 'space', 'anechoic', 'echo', 'sum'
+configuration = 'sum'; % 'pitch', 'space', 'anechoic', 'echo', 'sum'
 flag_c = 1;
 while flag_c
     switch configuration
         case 'anechoic'
-            SNRs = 3:-2:-7; 
+            SNRs = 9:-3:-12; 
+            N = [20, 30, 30, 30, 30, 30, 30, 20]; % Number of trials per SNR (variable)
             flag_c = 0;
         case 'pitch'
-            SNRs = 6:-2:-4; 
+            SNRs = 12:-3:-9; 
+            N = [20, 30, 30, 30, 30, 30, 30, 20]; 
             flag_c = 0;
         case 'space'
-            SNRs = 4:-2:-6; 
+            SNRs = 12:-3:-9; 
+            N = [20, 30, 30, 30, 30, 30, 30, 20]; 
             flag_c = 0;
         case 'echo'
-            SNRs = 8:-2:-2; 
+            SNRs = 12:-3:-9; 
+            N = [20, 30, 30, 30, 30, 30, 30, 20]; 
             flag_c = 0;
         case 'sum'
-            SNRs = 3:-2:-7; 
+            SNRs = 9:-3:-12; 
+            N = [20, 30, 30, 30, 30, 30, 30, 20]; 
             flag_c = 0;
         otherwise
             fprintf(2, 'Unrecognized configuration type! Try again!\n');
     end
 end
 
-N = [30, 30, 30, 30, 30, 30]; % change in 'target_masker.m' first
 num_trials = sum(N);
 num_snr = numel(SNRs);
+% For different randomization across conditions
+target_masker(N);
 
 gender = 'same_gender';
 b_same = filter_param(num_trials, gender, strcat(root_audios, '/target_masker/', gender, '/'), fs);

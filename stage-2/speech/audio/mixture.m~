@@ -20,7 +20,6 @@ switch configuration
     otherwise
         stim_tar = sigNorm(stim_tar)*0.1; % 0.1 is an arbitrary small number 
 end
-
 if length(stim_tar) < length(stim_masker)
     stim_tar = [stim_tar; zeros(length(stim_masker) - length(stim_tar), 1)];
 else
@@ -28,11 +27,18 @@ else
 end
 
 switch configuration
-    case {'anechoic', 'pitch', 'echo'}
-        mix = db2mag(-SNR)*stim_masker + stim_tar;
-    otherwise
-        stim_masker = -stim_masker;
-        mix = db2mag(-SNR)*stim_masker + stim_tar;
+if strcmp(configuration, 'anechoic')
+    mix = db2mag(-SNR)*stim_masker + stim_tar;
+elseif strcmp(configuration, 'pitch')
+    mix = db2mag(-SNR)*stim_masker + stim_tar;
+elseif strcmp(configuration, 'space')
+    stim_masker = -stim_masker;
+    mix = db2mag(-SNR)*stim_masker + stim_tar;
+elseif strcmp(configuration, 'echo')
+    mix = db2mag(-SNR)*stim_masker + stim_tar;
+elseif strcmp(configuration, 'sum')
+    stim_masker = -stim_masker;
+    mix = db2mag(-SNR)*stim_masker + stim_tar;
 end
 
 % mix = scaleSound(mix); 

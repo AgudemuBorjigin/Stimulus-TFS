@@ -1,13 +1,12 @@
+function target_masker(N)
 wordlists = 1:50;
 nlists = numel(wordlists);
 targets = 1:6;
 nwordsperlist = 6;
-% CHANGE AS NEEDED
-N = [30, 30, 30, 30, 30, 30]; % Number of trials per SNR (variable)
 totaltrials = sum(N);
 
 % CHANGE AS NEEDED: setting random generator seed and state, not needed for
-% different randomization 
+% different randomization
 % load('s.mat'); rng(s);
 
 targets = targets(randi(nwordsperlist, [1, totaltrials]));
@@ -34,14 +33,14 @@ count_f = 0; count_m = 0;
 for i = 1:numel(speakers_masker)
     if ~isempty(strfind(speakers_masker{i}, 'F'))
         count_f = count_f + 1;
-        speakers_masker_f{count_f} = speakers_masker{i};  %#ok<SAGROW>
+        speakers_masker_f{count_f} = speakers_masker{i};  %#ok<AGROW>
     elseif ~isempty(strfind(speakers_masker{i}, 'M'))
         count_m = count_m + 1;
-        speakers_masker_m{count_m} = speakers_masker{i};  %#ok<SAGROW>
+        speakers_masker_m{count_m} = speakers_masker{i};   %#ok<AGROW>
     end
 end
 
-% creating randomized mixture of 4 female and male speakers. 
+% creating randomized mixture of 4 female and male speakers.
 % for pitch configuration, pitch difference between target and masker is
 % difficult to equalized across trials, therefore it's better to
 % randomized the mixture across trials
@@ -52,14 +51,14 @@ for i = 1:num_target
     speakers_masker_f = speakers_masker_f(randperm(numel(speakers_masker_f)));
     if ~isempty(strfind(speakers_target{i}, 'F'))
         for j = 1:num_interferer
-            speakers_same{i, j} = speakers_masker_f{j};  %#ok<SAGROW>
-            speakers_opposite{i, j} = speakers_masker_m{j}; %#ok<SAGROW>
+            speakers_same{i, j} = speakers_masker_f{j};   %#ok<AGROW>
+            speakers_opposite{i, j} = speakers_masker_m{j};  %#ok<AGROW>
         end
     elseif ~isempty(strfind(speakers_target{i}, 'M'))
         for j = 1:num_interferer
             speakers_same{i, j} = speakers_masker_m{j};
             speakers_opposite{i, j} = speakers_masker_f{j};
-        end 
+        end
     end
 end
 
@@ -69,8 +68,8 @@ sentences = {sentences_dir.name};
 for i = 1:num_target
     sentences_temp = sentences(randperm(numel(sentences)));
     for j = 1:num_interferer
-        sentences_mix_temp = sentences_temp{j}; 
-        sentences_mix{i, j} = sentences_mix_temp(1:end-4); %#ok<SAGROW> % excluding .txt file extension 
+        sentences_mix_temp = sentences_temp{j};
+        sentences_mix{i, j} = sentences_mix_temp(1:end-4);  %#ok<AGROW> % excluding .txt file extension
     end
 end
 
@@ -78,8 +77,8 @@ end
 % extracting audios
 for i = 1:num_target
     for j = 1:num_interferer
-        audio_name_same{i, j} = strcat(speakers_same{i, j}, '_', sentences_mix{i, j}, '.wav'); %#ok<SAGROW>
-        audio_name_opposite{i, j} = strcat(speakers_opposite{i, j}, '_', sentences_mix{i, j}, '.wav'); %#ok<SAGROW>
+        audio_name_same{i, j} = strcat(speakers_same{i, j}, '_', sentences_mix{i, j}, '.wav'); %#ok<AGROW>
+        audio_name_opposite{i, j} = strcat(speakers_opposite{i, j}, '_', sentences_mix{i, j}, '.wav'); %#ok<AGROW>
     end
 end
 
@@ -104,38 +103,38 @@ for i = 1:num_target
     
     for j = 1:num_interferer
         audio_name_temp = audio_name_same{i, j};
-        txt_name_same{j} = audio_name_temp(8:end-4); %#ok<SAGROW>
-        speaker_name_same{j} = speakers_same{i, j}; %#ok<SAGROW>
+        txt_name_same{j} = audio_name_temp(8:end-4);  %#ok<AGROW,NASGU>
+        speaker_name_same{j} = speakers_same{i, j};  %#ok<AGROW>
         dir_temp = strcat(root_audios, '/harvard_sentences/', speakers_same{i, j},...
-            '/audio/', audio_name_temp); 
+            '/audio/', audio_name_temp);
         while ~exist(dir_temp, 'file') % not every speaker recorded every sentence
             if strcmp(audio_name_temp(3), 'F')
                 speaker_temp = speakers_female_temp{randi(numel(speakers_female_temp))};
                 dir_temp = strcat(root_audios, '/harvard_sentences/', speaker_temp,...
-            '/audio/', speaker_temp, audio_name_temp(7:end)); 
+                    '/audio/', speaker_temp, audio_name_temp(7:end));
             else
                 speaker_temp = speakers_male_temp{randi(numel(speakers_male_temp))};
                 dir_temp = strcat(root_audios, '/harvard_sentences/', speaker_temp,...
-            '/audio/', speaker_temp, audio_name_temp(7:end)); 
+                    '/audio/', speaker_temp, audio_name_temp(7:end));
             end
             speaker_name_same{j} = speaker_temp;
         end
         stim_same_temp = resample(audioread(dir_temp), 4069, 4000);
         
         audio_name_temp = audio_name_opposite{i, j};
-        txt_name_opposite{j} = audio_name_temp(8:end-4); %#ok<SAGROW>
-        speaker_name_opposite{j} = speakers_opposite{i, j}; %#ok<SAGROW>
+        txt_name_opposite{j} = audio_name_temp(8:end-4);  %#ok<AGROW,NASGU>
+        speaker_name_opposite{j} = speakers_opposite{i, j};  %#ok<AGROW>
         dir_temp = strcat(root_audios, '/harvard_sentences/', speakers_opposite{i, j},...
             '/audio/', audio_name_temp);
         while ~exist(dir_temp, 'file')
             if strcmp(audio_name_temp(3), 'F')
                 speaker_temp = speakers_female_temp{randi(numel(speakers_female_temp))};
                 dir_temp = strcat(root_audios, '/harvard_sentences/', speaker_temp,...
-            '/audio/', speaker_temp, audio_name_temp(7:end)); 
+                    '/audio/', speaker_temp, audio_name_temp(7:end));
             else
                 speaker_temp = speakers_male_temp{randi(numel(speakers_male_temp))};
                 dir_temp = strcat(root_audios, '/harvard_sentences/', speaker_temp,...
-            '/audio/', speaker_temp, audio_name_temp(7:end)); 
+                    '/audio/', speaker_temp, audio_name_temp(7:end));
             end
             speaker_name_opposite{j} = speaker_temp;
         end
@@ -149,19 +148,19 @@ for i = 1:num_target
             else
             end
             if stim_opposite_len < length(stim_opposite_temp)
-               stim_opposite = [stim_opposite;zeros(length(stim_opposite_temp) - stim_opposite_len, 1)]; %#ok<AGROW>
+                stim_opposite = [stim_opposite;zeros(length(stim_opposite_temp) - stim_opposite_len, 1)]; %#ok<AGROW>
             elseif stim_opposite_len > length(stim_opposite_temp)
-               stim_opposite_temp = [stim_opposite_temp;zeros(stim_opposite_len - length(stim_opposite_temp), 1)]; %#ok<AGROW>
-            else  
+                stim_opposite_temp = [stim_opposite_temp;zeros(stim_opposite_len - length(stim_opposite_temp), 1)]; %#ok<AGROW>
+            else
             end
-            stim_same_len = length(stim_same_temp); 
+            stim_same_len = length(stim_same_temp);
             stim_opposite_len = length(stim_opposite_temp);
             stim_same = stim_same + stim_same_temp;
             stim_opposite = stim_opposite + stim_opposite_temp;
         else
             stim_same = stim_same_temp;
             stim_opposite = stim_opposite_temp;
-            stim_same_len = length(stim_same_temp); 
+            stim_same_len = length(stim_same_temp);
             stim_opposite_len = length(stim_opposite_temp);
         end
     end
@@ -169,15 +168,16 @@ for i = 1:num_target
     stim_opposite = stim_opposite/num_interferer;
     stim_same = stim_same/num_interferer;
     
-    % extracting and saving audio files for target and masker 
+    % extracting and saving audio files for target and masker
     wordlist = wordlists(i);
     target = targets(i);
     fname_tar = fileDir(root_audios, speakers_target{i}, wordlist, target);
-    stim_tar = resample(audioread(fname_tar), 4069, 4000);
+    stim_tar = resample(audioread(fname_tar), 4069, 4000); %#ok<NASGU>
     
     savename = [root_audios, '/target_masker/same_gender/trial', num2str(i), '.mat'];
     save(savename, 'stim_tar', 'stim_same', 'target', 'wordlist', 'txt_name_same', 'speaker_name_same');
     savename = [root_audios, '/target_masker/opposite_gender/trial', num2str(i), '.mat'];
     save(savename, 'stim_tar', 'stim_opposite', 'target', 'wordlist', 'txt_name_opposite', 'speaker_name_opposite');
 end
-    
+end
+
