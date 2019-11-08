@@ -5,29 +5,29 @@ t_onset = 0.8;
 % CHANGE AS NEEDED
 root_audios = '/Users/baoagudemu1/Desktop/Lab/Experiment/speechAudiofiles_stage2';
 
-configuration = 'space'; % 'pitch', 'space', 'anechoic', 'echo', 'sum'
+configuration = 'sum'; % 'pitch', 'space', 'anechoic', 'echo', 'sum'
 flag_c = 1;
 while flag_c
     switch configuration
         case 'anechoic'
-            SNRs = 5:-3:-10; 
-            N = [20, 35, 35, 35, 35, 20]; % Number of trials per SNR (variable)
+            SNRs = 8:-4:-16; 
+            N = [30, 30, 30, 30, 30, 30, 30]; % Number of trials per SNR (variable)
             flag_c = 0;
         case 'pitch'
-            SNRs = 6:-2:-4; 
-            N = [30, 30, 30, 30, 30, 30]; % Number of trials per SNR (variable)
+            SNRs = 0:-3:-15; 
+            N = [35, 35, 35, 35, 35, 35]; 
             flag_c = 0;
         case 'space'
-            SNRs = 4:-2:-6; 
-            N = [30, 30, 30, 30, 30, 30]; % Number of trials per SNR (variable)
+            SNRs = 0:-3:-15; 
+            N = [35, 35, 35, 35, 35, 35]; 
             flag_c = 0;
         case 'echo'
-            SNRs = 12:-4:-8; 
-            N = [20, 35, 35, 35, 35, 20]; % Number of trials per SNR (variable)
+            SNRs = 3:-3:-15; 
+            N = [35, 35, 35, 35, 35, 35]; 
             flag_c = 0;
         case 'sum'
-            SNRs = 3:-2:-7; 
-            N = [30, 30, 30, 30, 30, 30]; % Number of trials per SNR (variable)
+            SNRs = -3:-3:-18; 
+            N = [35, 35, 35, 35, 35, 35]; 
             flag_c = 0;
         otherwise
             fprintf(2, 'Unrecognized configuration type! Try again!\n');

@@ -10,24 +10,24 @@ flag_c = 1;
 while flag_c
     switch configuration
         case 'anechoic'
-            SNRs = 9:-3:-12; 
-            N = [20, 30, 30, 30, 30, 30, 30, 20]; % Number of trials per SNR (variable)
+            SNRs = 8:-4:-16; 
+            N = [35, 35, 35, 35, 35, 35, 35]; % Number of trials per SNR (variable)
             flag_c = 0;
         case 'pitch'
-            SNRs = 12:-3:-9; 
-            N = [20, 30, 30, 30, 30, 30, 30, 20]; 
+            SNRs = 4:-4:-20; 
+            N = [35, 35, 35, 35, 35, 35, 35]; 
             flag_c = 0;
         case 'space'
-            SNRs = 12:-3:-9; 
-            N = [20, 30, 30, 30, 30, 30, 30, 20]; 
-            flag_c = 0;
+            SNRs = 4:-4:-20; 
+            N = [35, 35, 35, 35, 35, 35, 35]; 
+            flag_c = 0; 
         case 'echo'
-            SNRs = 12:-3:-9; 
-            N = [20, 30, 30, 30, 30, 30, 30, 20]; 
+            SNRs = 4:-4:-20; 
+            N = [35, 35, 35, 35, 35, 35, 35]; 
             flag_c = 0;
         case 'sum'
-            SNRs = 9:-3:-12; 
-            N = [20, 30, 30, 30, 30, 30, 30, 20]; 
+            SNRs = -3:-3:-18; 
+            N = [35, 35, 35, 35, 35, 35]; 
             flag_c = 0;
         otherwise
             fprintf(2, 'Unrecognized configuration type! Try again!\n');
