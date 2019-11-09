@@ -4,7 +4,7 @@ stim_masker = filter(b, 1, stim_masker);
 switch configuration
     case {'pitch', 'echo', 'space'}
         load('h_barMonsieurRichard.mat');
-        h = h/max(h); %#ok<NODEF>
+        h = h/max(h);
         stim_masker = conv(stim_masker,h);
     otherwise
 end
@@ -16,7 +16,7 @@ switch configuration
     case {'pitch', 'echo', 'space'}
         load('h_barMonsieurRichard.mat');
         h = h/max(h);
-        stim_tar = conv(stim_tar,h);
+        stim_ = conv(stim_masker,h);
     otherwise
 end
 stim_tar = sigNorm(stim_tar)*0.1;

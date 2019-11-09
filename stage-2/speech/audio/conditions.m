@@ -5,44 +5,54 @@ t_onset = 0.8;
 % CHANGE AS NEEDED
 root_audios = '/Users/baoagudemu1/Desktop/Lab/Experiment/speechAudiofiles_stage2';
 
-configuration = 'sum'; % 'pitch', 'space', 'anechoic', 'echo', 'sum'
+configuration = 'pitch'; % 'pitch', 'space', 'anechoic', 'echo', 'sum'
 flag_c = 1;
 while flag_c
     switch configuration
         case 'anechoic'
-            SNRs = 8:-4:-16; 
+            SNRs = 8:-5:-22;
             N = [35, 35, 35, 35, 35, 35, 35]; % Number of trials per SNR (variable)
+            num_trials = sum(N);
             flag_c = 0;
+            gender = 'same_gender';
+            b_same = filter_param(num_trials, gender, strcat(root_audios, '/target_masker/', gender, '/'), fs);
         case 'pitch'
-            SNRs = 4:-4:-20; 
-            N = [35, 35, 35, 35, 35, 35, 35]; 
+            SNRs = 10:-5:-15;
+            N = [35, 35, 35, 35, 35, 35];
+            num_trials = sum(N);
             flag_c = 0;
+            gender = 'opposite_gender';
+            b_opposite = filter_param(num_trials, gender, strcat(root_audios, '/target_masker/', gender, '/'), fs);
         case 'space'
-            SNRs = 4:-4:-20; 
-            N = [35, 35, 35, 35, 35, 35, 35]; 
-            flag_c = 0; 
+            SNRs = 10:-5:-15;
+            N = [35, 35, 35, 35, 35, 35];
+            num_trials = sum(N);
+            flag_c = 0;
+            gender = 'same_gender';
+            b_same = filter_param(num_trials, gender, strcat(root_audios, '/target_masker/', gender, '/'), fs);
         case 'echo'
-            SNRs = 4:-4:-20; 
-            N = [35, 35, 35, 35, 35, 35, 35]; 
+            SNRs = 10:-4:-10;
+            N = [35, 35, 35, 35, 35, 35];
+            num_trials = sum(N);
             flag_c = 0;
+            gender = 'same_gender';
+            b_same = filter_param(num_trials, gender, strcat(root_audios, '/target_masker/', gender, '/'), fs);
         case 'sum'
-            SNRs = -3:-3:-18; 
-            N = [35, 35, 35, 35, 35, 35]; 
+            SNRs = 2:-4:-18;
+            N = [35, 35, 35, 35, 35, 35];
+            num_trials = sum(N);
             flag_c = 0;
+            gender = 'opposite_gender';
+            b_opposite = filter_param(num_trials, gender, strcat(root_audios, '/target_masker/', gender, '/'), fs);
+            
         otherwise
             fprintf(2, 'Unrecognized configuration type! Try again!\n');
     end
 end
 
-num_trials = sum(N);
 num_snr = numel(SNRs);
 % For different randomization across conditions
 target_masker(N);
-
-gender = 'same_gender';
-b_same = filter_param(num_trials, gender, strcat(root_audios, '/target_masker/', gender, '/'), fs);
-gender = 'opposite_gender';
-b_opposite = filter_param(num_trials, gender, strcat(root_audios, '/target_masker/', gender, '/'), fs);
 
 if strcmp(configuration,'anechoic')
     num_trial = 0;
