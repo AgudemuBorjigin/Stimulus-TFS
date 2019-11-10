@@ -1,16 +1,16 @@
-subj = 'S185';
+subj = 'S123';
 cond = 'space';
 flag_c = 1;
 while flag_c
     switch cond
         case 'anechoic'
-            SNRs = -20:4:4;
+            SNRs = -22:5:8;
             flag_c = 0;
         case 'pitch'
-            SNRs = -20:4:4;
+            SNRs = -15:5:10;
             flag_c = 0;
         case 'space'
-            SNRs = -20:5:10; 
+            SNRs = -15:5:10; 
             flag_c = 0;
         case 'echo'
             SNRs = -20:5:10; 
@@ -24,7 +24,7 @@ while flag_c
 end
 rootPath = 'C:\Experiments\Agudemu\stimulus-TFS\stage-2\speech\results\';
 files = dir(strcat(rootPath, cond, '\', subj));
-load(strcat(rootPath, cond, '\', subj, '\', files(end).name));
+load(strcat(rootPath, cond, '\', subj, '\', files(end-1).name));
 
 for k = 1:numel(SNRs)
     resp_SNR = responseTable(responseTable(:, 4) == SNRs(k), 2);
