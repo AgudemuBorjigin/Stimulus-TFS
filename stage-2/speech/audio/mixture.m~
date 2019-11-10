@@ -4,7 +4,7 @@ stim_masker = filter(b, 1, stim_masker);
 switch configuration
     case {'pitch', 'echo', 'space'}
         load('h_barMonsieurRichard.mat');
-        h = h/max(h);
+        h = h/max(h); %#ok<NODEF>
         stim_masker = conv(stim_masker,h);
     otherwise
 end
@@ -16,7 +16,7 @@ switch configuration
     case {'pitch', 'echo', 'space'}
         load('h_barMonsieurRichard.mat');
         h = h/max(h);
-        stim_ = conv(stim_masker,h);
+        stim_tar = conv(stim_tar,h);
     otherwise
 end
 stim_tar = sigNorm(stim_tar)*0.1;
@@ -27,7 +27,7 @@ switch configuration
         mix_left = stim_tar + stim_masker;
         mix_right = stim_tar + stim_masker;
     otherwise
-        mix_left = - stim_tar + stim_masker; % N0S_pi
+        mix_left = [stim_tar(1:t_mskonset*fs); -stim_tar(t_mskonset*fs+1:end)] + stim_masker; % N0S_pi
         mix_right = stim_tar + stim_masker;
 end
 
