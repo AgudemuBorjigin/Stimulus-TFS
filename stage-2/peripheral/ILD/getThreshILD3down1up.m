@@ -103,13 +103,13 @@ try
         %Start dropping from maximum RMS (actual RMS not peak-equivalent)
         if rightOrLeft(trialCount) == 1
             % correct answer is 1
-            drop_left = sens + 10.5236 - (L-ILD/2) - digDrop + db(scale*sqrt(2)/0.95);
-            drop_right = sens + 10.5236 - (L+ILD/2) - digDrop + db(scale*sqrt(2)/0.95);
+            drop_right = sens + 10.5236 - (L-ILD/2) - digDrop + db(scale*sqrt(2)/0.95);
+            drop_left = sens + 10.5236 - (L+ILD/2) - digDrop + db(scale*sqrt(2)/0.95);
             answer = 1;
         else
             % correct answer is 2
-            drop_left = sens + 10.5236 - (L+ILD/2) - digDrop + db(scale*sqrt(2)/0.95);
-            drop_right = sens + 10.5236 - (L-ILD/2) - digDrop + db(scale*sqrt(2)/0.95);
+            drop_right = sens + 10.5236 - (L+ILD/2) - digDrop + db(scale*sqrt(2)/0.95);
+            drop_left = sens + 10.5236 - (L-ILD/2) - digDrop + db(scale*sqrt(2)/0.95);
             answer = 2;
         end
         %-----------------------------------------
@@ -303,7 +303,7 @@ catch me%#ok<CTCH>
         datetag(strfind(datetag,':')) = '_';
         fname_resp = strcat(respDir,sID,'_',num2str(fc),...
             'Hz_crash_',datetag,'.mat');
-        save(fname_resp,'ITDList','respList','fc');
+        save(fname_resp,'ILDList','respList','fc');
     end
     % Restore preferences
     Screen('Preference', 'VisualDebugLevel', PS.oldVisualDebugLevel);
