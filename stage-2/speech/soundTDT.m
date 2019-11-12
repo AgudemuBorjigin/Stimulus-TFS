@@ -1,6 +1,5 @@
-function soundTDT(y, RZ, level)
+function soundTDT(y, RZ, level, stimrms)
 stimlength = size(y, 1);
-stimrms = 0.1; % CHANGE AS NEEDED: check mixture.m file
 chanL = y(:, 1);
 chanR = y(:, 2);
 %-----------------

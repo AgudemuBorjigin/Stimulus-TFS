@@ -28,4 +28,4 @@ save('currsubj', 'subj', 'respDir', 'startBlock', 'condition');
 
 %% Call app
 pause(1);
-WiN6AFC;
+WiN6AFC_Agudemu;

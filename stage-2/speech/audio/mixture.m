@@ -1,25 +1,26 @@
 function mixture(stim_tar, stim_masker, b, configuration, SNR, id_trial, target, wordlist, t_mskonset, fs, rampdur, root_audios) %#ok<INUSL>
+normval = 0.01;
 % masker starts after the prompt for target 
 stim_masker = filter(b, 1, stim_masker);
 switch configuration
     case {'pitch', 'echo', 'space'}
         load('h_barMonsieurRichard.mat');
-        h = h/max(h); %#ok<NODEF>
+        % h = h/max(h); %#ok<NODEF>
         stim_masker = conv(stim_masker,h);
     otherwise
 end
-stim_masker = sigNorm(stim_masker)*0.1;
+stim_masker = sigNorm(stim_masker)*normval;
 stim_masker = db2mag(-SNR)*stim_masker;
 stim_masker = [zeros(t_mskonset*fs, 1); stim_masker];
 
 switch configuration
     case {'pitch', 'echo', 'space'}
         load('h_barMonsieurRichard.mat');
-        h = h/max(h);
+        % h = h/max(h);
         stim_tar = conv(stim_tar,h);
     otherwise
 end
-stim_tar = sigNorm(stim_tar)*0.1;
+stim_tar = sigNorm(stim_tar)*normval;
 stim_tar = [stim_tar; zeros(length(stim_masker) - length(stim_tar), 1)];
 
 switch configuration
