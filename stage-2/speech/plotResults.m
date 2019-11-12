@@ -1,5 +1,5 @@
-subj = 'S123';
-cond = 'space';
+subj = 'S133';
+cond = 'pitch';
 flag_c = 1;
 while flag_c
     switch cond
@@ -13,10 +13,10 @@ while flag_c
             SNRs = -15:5:10; 
             flag_c = 0;
         case 'echo'
-            SNRs = -20:5:10; 
+            SNRs = -10:4:10; 
             flag_c = 0;
         case 'sum'
-            SNRs = -18:3:-3;
+            SNRs = -18:4:2;
             flag_c = 0;
         otherwise
             fprintf(2, 'Unrecognized configuration type! Try again!\n');
