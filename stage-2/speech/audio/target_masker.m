@@ -22,7 +22,7 @@ end
 wordlists = wordlists(randperm(totaltrials));
 
 % Exclude M5 because of different naming convention of files
-speakers_target = {'F1', 'F2', 'F3', 'F4', 'M1', 'M2', 'M3', 'M4', 'M5'};
+speakers_target = {'F1', 'F2', 'F3', 'F4', 'M1', 'M2', 'M3', 'M4'};
 speakers_target = speakers_target(randi(numel(speakers_target), [1, totaltrials]));
 
 % separately grouping all female and male speakers from Harvard sentences

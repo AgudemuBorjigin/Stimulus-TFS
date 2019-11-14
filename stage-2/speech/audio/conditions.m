@@ -5,12 +5,12 @@ t_onset = 0.8;
 % CHANGE AS NEEDED
 root_audios = '/Users/baoagudemu1/Desktop/Lab/Experiment/speechAudiofiles_stage2';
 
-configuration = 'space'; % 'pitch', 'space', 'anechoic', 'echo', 'sum'
+configuration = 'sum'; % 'pitch', 'space', 'anechoic', 'echo', 'sum'
 flag_c = 1;
 while flag_c
     switch configuration
         case 'anechoic'
-            SNRs = 8:-4:-20;
+            SNRs = 8:-5:-22;
             N = [25, 35, 35, 35, 35, 35, 25]; % Number of trials per SNR (variable)
             num_trials = sum(N);
             flag_c = 0;
@@ -18,8 +18,8 @@ while flag_c
             gender = 'same_gender';
             b_same = filter_param(num_trials, gender, strcat(root_audios, '/target_masker/', gender, '/'), fs);
         case 'pitch'
-            SNRs = 14:-4:-10;
-            N = [35, 35, 35, 35, 35, 35, 35];
+            SNRs = 12:-4:-16;
+            N = [25, 35, 35, 35, 35, 35, 35, 25];
             num_trials = sum(N);
             flag_c = 0;
             % For different randomization across conditions
@@ -27,24 +27,24 @@ while flag_c
             gender = 'opposite_gender';
             b_opposite = filter_param(num_trials, gender, strcat(root_audios, '/target_masker/', gender, '/'), fs);
         case 'space'
-            SNRs = 10:-5:-15;
-            N = [35, 35, 35, 35, 35, 35];
+            SNRs = 12:-4:-16;
+            N = [25, 35, 35, 35, 35, 35, 35, 25];
             num_trials = sum(N);
             flag_c = 0;
             target_masker(N);
             gender = 'same_gender';
             b_same = filter_param(num_trials, gender, strcat(root_audios, '/target_masker/', gender, '/'), fs);
         case 'echo'
-            SNRs = 10:-4:-10;
-            N = [35, 35, 35, 35, 35, 35];
+            SNRs = 12:-4:-16;
+            N = [25, 35, 35, 35, 35, 35, 35, 25];
             num_trials = sum(N);
             flag_c = 0;
             target_masker(N);
             gender = 'same_gender';
             b_same = filter_param(num_trials, gender, strcat(root_audios, '/target_masker/', gender, '/'), fs);
         case 'sum'
-            SNRs = 2:-4:-18;
-            N = [35, 35, 35, 35, 35, 35];
+            SNRs = 4:-3:-17;
+            N = [25, 35, 35, 35, 35, 35, 35, 25];
             num_trials = sum(N);
             flag_c = 0;
             target_masker(N);

@@ -1,0 +1,57 @@
+rootPath = '/Users/baoagudemu1/Desktop/Lab/Experiment/stimulus-TFS/stage-2/speech/results';
+cond = 'anechoic';
+path = strcat(rootPath, '/', cond, '/S*');
+folders = dir(path);
+subjs = {folders.name};
+
+for i = 1:numel(subjs)
+    files = dir(strcat(rootPath, '/', cond, '/', subjs{i}));
+    load(strcat(rootPath, '/', cond, '/', subjs{i}, '/', files(end).name));
+    SNRs = unique(responseTable(:,4));
+    numSNR = numel(SNRs);
+    scorestd = zeros(1, numSNR);
+    for k = 1:numel(SNRs)
+        resp_SNR = responseTable(responseTable(:, 4) == SNRs(k), 2);
+        target_SNR = responseTable(responseTable(:, 4) == SNRs(k), 3);
+        ntrials(k) = sum(responseTable(:, 4) == SNRs(k)); %#ok<SAGROW>
+        score(k) = sum(resp_SNR == target_SNR) / ntrials(k); 
+        scorestd(k) = score(k)*(1-score(k))/sqrt(ntrials(k)); 
+    end
+   
+    h = errorbar(SNRs, score, scorestd, 'x');
+    color = get(h, 'Color');
+    hold on;
+    % http://matlaboratory.blogspot.com/2015/04/introduction-to-psychometric-curves-and.html
+    targets = [0.25, 0.5, 0.75];
+    [coeffs, stats, curve, threshold] = FitPsycheCurveLogit(SNRs, score(i, :), ones(1, length(SNRs)), targets);
+    plot(curve(:,1), curve(:,2), 'LineStyle', '--', 'color', color);
+    
+    if i == 1
+        data = responseTable;
+    else
+        data = [data; responseTable];
+    end
+    
+    if i == numel(subjs)
+        SNRs = unique(data(:,4));
+        for k = 1:numel(SNRs)
+            resp_SNR = data(data(:, 4) == SNRs(k), 2);
+            target_SNR = data(data(:, 4) == SNRs(k), 3);
+            ntrials(k) = sum(data(:, 4) == SNRs(k));
+            score(k) = sum(resp_SNR == target_SNR) / ntrials(k);
+            scorestd(k) = score(k)*(1-score(k))/sqrt(ntrials(k));
+        end
+        h = errorbar(SNRs, score, scorestd, 'x');
+        color = get(h, 'Color');
+        hold on;
+        % http://matlaboratory.blogspot.com/2015/04/introduction-to-psychometric-curves-and.html
+        targets = [0.25, 0.5, 0.75];
+        [coeffs, stats, curve, threshold] = FitPsycheCurveLogit(SNRs, score(i, :), ones(1, length(SNRs)), targets);
+        plot(curve(:,1), curve(:,2), 'LineStyle', '--', 'color', color);
+    end
+end
+grid on;
+title(cond);
+xlabel('SNR (dB)');
+ylabel('Proportion Correct');
+set(gca, 'FontSize', 16);

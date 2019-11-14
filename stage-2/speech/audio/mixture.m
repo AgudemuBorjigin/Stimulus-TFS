@@ -29,6 +29,8 @@ switch configuration
         mix_right = stim_tar + stim_masker;
     otherwise
         mix_left = -stim_tar + stim_masker; % N0S_pi
+        length(stim_tar) 
+        length(stim_masker)
         mix_right = stim_tar + stim_masker;
 end
 
