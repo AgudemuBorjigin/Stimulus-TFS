@@ -1,5 +1,5 @@
 rootPath = '/Users/baoagudemu1/Desktop/Lab/Experiment/stimulus-TFS/stage-2/speech/results';
-cond = 'anechoic';
+cond = 'sum';
 path = strcat(rootPath, '/', cond, '/S*');
 folders = dir(path);
 subjs = {folders.name};
