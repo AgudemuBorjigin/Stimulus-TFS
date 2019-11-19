@@ -1,5 +1,5 @@
-subj = 'Britany';
-cond = 'space';
+subj = 'S078';
+cond = 'pitch';
 flag_c = 1;
 while flag_c
     switch cond
