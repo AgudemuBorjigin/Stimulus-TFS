@@ -8,9 +8,9 @@ switch configuration
         stim_masker = conv(stim_masker,h);
     otherwise
 end
-stim_masker = sigNorm(stim_masker)*normval;
+stim_masker = scaleSound(sigNorm(stim_masker))*normval;
 stim_masker = db2mag(-SNR)*stim_masker;
-stim_masker = [zeros(uint16(t_mskonset*fs), 1); stim_masker];
+stim_masker = [zeros(t_mskonset*fs, 1); stim_masker];
 
 switch configuration
     case {'echo-pitch', 'echo', 'echo-space', 'echo-sum'}
@@ -18,7 +18,7 @@ switch configuration
         stim_tar = conv(stim_tar,h);
     otherwise
 end
-stim_tar = sigNorm(stim_tar)*normval;
+stim_tar = scaleSound(sigNorm(stim_tar))*normval;
 if length(stim_masker) > length(stim_tar)
     stim_tar = [stim_tar; zeros(length(stim_masker) - length(stim_tar), 1)];
 else

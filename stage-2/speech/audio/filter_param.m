@@ -43,5 +43,4 @@ f_half = f(f< fs/2);
 f_half = f_half';
 gain_half = gain(f<fs/2);
 b = fir2(128, f_half/max(f_half), gain_half); % smaller the filter order, smoother the filter
-
 end
