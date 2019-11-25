@@ -1,5 +1,5 @@
-subj = 'S078';
-cond = 'pitch';
+subj = 'S026';
+cond = 'sum';
 flag_c = 1;
 while flag_c
     switch cond
@@ -16,7 +16,7 @@ while flag_c
             SNRs = -16:4:12; 
             flag_c = 0;
         case 'sum'
-            SNRs = -18:4:2;
+            SNRs = -17:3:4;
             flag_c = 0;
         otherwise
             fprintf(2, 'Unrecognized configuration type! Try again!\n');

@@ -16,6 +16,8 @@ chanR = y(:, 2);
 % db(sigrms/0.707).
 
 drop = 111 - level + 3 + db(stimrms); % The extra 3 for the 0.707 factor
+% sens = phoneSens(1000);
+% drop = sens + 10.5236 - level + db(stimrms);
 
 stimTrigger = 1; % Does nothing here
 invoke(RZ, 'SetTagVal', 'trigval', stimTrigger);
