@@ -1,43 +1,30 @@
-subj = 'S026';
-cond = 'sum';
-flag_c = 1;
-while flag_c
-    switch cond
-        case 'anechoic'
-            SNRs = -22:5:8;
-            flag_c = 0;
-        case 'pitch'
-            SNRs = -16:4:12;
-            flag_c = 0;
-        case 'space'
-            SNRs = -16:4:12; 
-            flag_c = 0;
-        case 'echo'
-            SNRs = -16:4:12; 
-            flag_c = 0;
-        case 'sum'
-            SNRs = -17:3:4;
-            flag_c = 0;
-        otherwise
-            fprintf(2, 'Unrecognized configuration type! Try again!\n');
-    end
-end
-rootPath = 'C:\Experiments\Agudemu\stimulus-TFS\stage-2\speech\results\';
-files = dir(strcat(rootPath, cond, '\', subj));
-load(strcat(rootPath, cond, '\', subj, '\', files(end).name));
+subj = 'Erica';
+numVisit = 4;
 
-for k = 1:numel(SNRs)
-    resp_SNR = responseTable(responseTable(:, 4) == SNRs(k), 2);
-    target_SNR = responseTable(responseTable(:, 4) == SNRs(k), 3);
-    ntrials(k) = sum(responseTable(:, 4) == SNRs(k)); %#ok<SAGROW>
-    scores(k) = sum(resp_SNR == target_SNR) / ntrials(k); %#ok<SAGROW>
-    scorestd(k) = scores(k)*(1-scores(k))/sqrt(ntrials(k)); %#ok<SAGROW>
-    snr_label{k} = num2str(SNRs(k)); %#ok<SAGROW>
-end
-errorbar(SNRs, scores, scorestd, 'xb', 'linew', 2);
-title(strcat(cond, '-', subj));
-xlabel('SNR (dB)', 'fontsize', 16);
-ylabel('Proportion Correct', 'fontsize', 16);
+rootPath = '/Users/baoagudemu1/Desktop/Lab/Experiment/stimulus-TFS/stage-2/speech/results/';
+
+figure;
+plotCond(rootPath, numVisit, subj, 'anechoic');
+plotCond(rootPath, numVisit, subj, 'pitch');
+plotCond(rootPath, numVisit, subj, 'space');
+plotCond(rootPath, numVisit, subj, 'sum');
 grid on;
-xticks(SNRs);
-xticklabels(snr_label);
+xlabel('SNR (dB)');
+ylabel('Proportion Correct');
+set(gca, 'FontSize', 16);
+legend('anechoic', 'pitch', 'space', 'sum', 'Location', 'Best');
+title(subj);
+%xlim([-25 15]);ylim([0 1]);
+
+figure;
+plotCond(rootPath, numVisit, subj, 'echo');
+plotCond(rootPath, numVisit, subj, 'echo-pitch');
+plotCond(rootPath, numVisit, subj, 'echo-space');
+plotCond(rootPath, numVisit, subj, 'echo-sum');
+grid on;
+xlabel('SNR (dB)');
+ylabel('Proportion Correct');
+set(gca, 'FontSize', 16);
+legend('echo', 'echo-pitch', 'echo-space', 'echo-sum', 'Location', 'Best');
+title(subj);
+%xlim([-25 15]);ylim([0 1]);

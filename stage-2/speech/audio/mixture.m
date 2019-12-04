@@ -39,5 +39,5 @@ mix_right  = rampsound(mix_right, fs, rampdur);
 y = [mix_left, mix_right];  %#ok<NASGU>
 
 savename = [root_audios, '/mixture/', strcat('visit-', num2str(v)), '/trial', id_trial, '.mat'];
-save(savename, 'configuration', 'y', 'fs', 'SNR', 'target', 'wordlist');
+save(savename, 'configuration', 'y', 'SNR', 'target', 'wordlist', 'fs');
 end
