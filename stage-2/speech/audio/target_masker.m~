@@ -24,7 +24,6 @@ wordlists = wordlists(randperm(totaltrials));
 speakers_target = {'F1', 'M1'};
 speakers_target = speakers_target(randi(numel(speakers_target), [1, totaltrials]));
 
-% STOPPED HERE - AB: 12/04/2019
 % separately grouping all female and male speakers from Harvard sentences
 root_audios = '/Users/baoagudemu1/Desktop/Lab/Experiment/speechAudiofiles_stage2';
 masker_files = dir(strcat(root_audios, '/harvard_sentences'));

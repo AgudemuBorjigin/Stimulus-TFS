@@ -14,7 +14,6 @@ function stim_temp = readMaskerAudios(root_audios, audio_name, masker, maskers_f
             end
             speaker_name = speaker_temp; %#ok<NASGU>
         end
-        stim_temp = resample(audioread(dir_temp), 4069, 4000);
-        %stim_same_temp = resample(audioread(dir_temp), 44288, 40000);
+        stim_temp = resample(audioread(dir_temp), 692, 625);
         stim_temp = scaleSound(stim_temp);
 end
