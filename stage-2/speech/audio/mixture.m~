@@ -14,11 +14,11 @@ stim_tar_right = singleChan(stim_tar, configuration, h(:,2), normval, SNR, t_msk
 
 switch configuration
     case {'anechoic', 'pitch', 'echo', 'echo-pitch'}
-        mix_left = stim_tar_left + stim_masker_left;
-        mix_right = stim_tar_right + stim_masker_right;
+        mix_left = stim_tar + stim_masker;
+        mix_right = stim_tar + stim_masker;
     otherwise
-        mix_left = -stim_tar_left + stim_masker_left; % N0S_pi
-        mix_right = stim_tar_right + stim_masker_right;
+        mix_left = -stim_tar + stim_masker; % N0S_pi
+        mix_right = stim_tar + stim_masker;
 end
 
 mix_left  = rampsound(mix_left, fs, rampdur);
@@ -26,5 +26,5 @@ mix_right  = rampsound(mix_right, fs, rampdur);
 y = [mix_left, mix_right];  %#ok<NASGU>
 
 savename = [root_audios, '/mixture/', strcat('visit-', num2str(v)), '/trial', id_trial, '.mat'];
-save(savename, 'configuration', 'y', 'SNR', 'target', 'wordlist');
+save(savename, 'configuration', 'y', 'SNR', 'target', 'wordlist', 'fs');
 end

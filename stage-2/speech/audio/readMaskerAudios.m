@@ -4,11 +4,11 @@ function stim_temp = readMaskerAudios(root_audios, audio_name, masker, maskers_f
             '/audio/', audio_name);
         while ~exist(dir_temp, 'file') % not every speaker recorded every sentence
             if strcmp(audio_name(3), 'F')
-                speaker_temp = maskers_female{randi(numel(maskers_female))};
+                speaker_temp = maskers_female{1};
                 dir_temp = strcat(root_audios, '/harvard_sentences/', speaker_temp,...
                     '/audio/', speaker_temp, audio_name(7:end));
             else
-                speaker_temp = maskers_male{randi(numel(maskers_male))};
+                speaker_temp = maskers_male{1};
                 dir_temp = strcat(root_audios, '/harvard_sentences/', speaker_temp,...
                     '/audio/', speaker_temp, audio_name(7:end));
             end

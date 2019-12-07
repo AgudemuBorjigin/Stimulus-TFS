@@ -5,15 +5,14 @@ t_onset = 0.7;
 % CHANGE AS NEEDED
 root_audios = '/Users/baoagudemu1/Desktop/Lab/Experiment/speechAudiofiles_stage2';
 
-%conds = {'echo-pitch', 'echo-space', 'echo', 'echo-sum', 'pitch', 'space', 'anechoic', 'sum'};
-conds = {'echo', 'echo-pitch'};
+conds = {'echo-pitch', 'echo-space', 'echo', 'echo-sum', 'pitch', 'space', 'anechoic', 'sum'};
 %SNRs = {15:-6:-21, 15:-6:-21, 15:-6:-21, 12:-6:-24, 8:-5:-22, 8:-5:-22, 8:-5:-22, 8:-5:-22};
 % make sure every number is divisible by 4 
 % Ns = {[24, 36, 36, 36, 36, 36, 24], [24, 36, 36, 36, 36, 36, 24], [24, 36, 36, 36, 36, 36, 24],...
 %       [24, 36, 36, 36, 36, 36, 24], [24, 36, 36, 36, 36, 36, 24], [24, 36, 36, 36, 36, 36, 24],...
 %       [24, 36, 36, 36, 36, 36, 24], [24, 36, 36, 36, 36, 36, 24]};
-SNRs = {-6, -6};
-Ns = {30, 30};
+SNRs = {-6, -6, -6, -6, -6, -6, -6, -6};
+Ns = {10, 10, 10, 10, 10, 10, 10, 10};
 
 num_total = 0;
 

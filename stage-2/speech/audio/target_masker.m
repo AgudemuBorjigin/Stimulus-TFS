@@ -27,28 +27,13 @@ speakers_target = speakers_target(randi(numel(speakers_target), [1, totaltrials]
 % STOPPED HERE - AB: 12/04/2019
 % separately grouping all female and male speakers from Harvard sentences
 root_audios = '/Users/baoagudemu1/Desktop/Lab/Experiment/speechAudiofiles_stage2';
-masker_files = dir(strcat(root_audios, '/harvard_sentences'));
-speakers_masker = {masker_files.name};
-count_f = 0; count_m = 0;
-for i = 1:numel(speakers_masker)
-    if ~isempty(strfind(speakers_masker{i}, 'F'))
-        count_f = count_f + 1;
-        speakers_masker_f{count_f} = speakers_masker{i};  %#ok<AGROW>
-    elseif ~isempty(strfind(speakers_masker{i}, 'M'))
-        count_m = count_m + 1;
-        speakers_masker_m{count_m} = speakers_masker{i};   %#ok<AGROW>
-    end
-end
 
-% creating randomized mixture of 4 female and male speakers.
-% for pitch configuration, pitch difference between target and masker is
-% difficult to equalized across trials, therefore it's better to
-% randomized the mixture across trials
+speakers_masker_f = {'NCF011', 'NCF015', 'PNF139', 'PNF142', 'PNF135'};
+speakers_masker_m = {'NCM012', 'NCM017', 'PNM078', 'PNM086', 'PNM082'};
+% assigning masker speakers to the target speakers according to gender
 num_interferer = 4;
 num_target = numel(speakers_target);
 for i = 1:num_target
-    speakers_masker_m = speakers_masker_m(randperm(numel(speakers_masker_m)));
-    speakers_masker_f = speakers_masker_f(randperm(numel(speakers_masker_f)));
     if ~isempty(strfind(speakers_target{i}, 'F'))
         for j = 1:num_interferer
             maskers_same{i, j} = speakers_masker_f{j};   %#ok<AGROW>
@@ -84,22 +69,10 @@ end
 
 % mixing audio signals to generate masker
 for i = 1:num_target
-    maskers_male_temp = speakers_masker_m;
-    maskers_female_temp = speakers_masker_f;
-    % creating pool of speakers excluding current mixture of speakers for
-    % replacement in case a certain speaker in the original
-    % mixture did not record the chosen sentence
-    for j = 1:num_interferer
-        speaker_same_temp = maskers_same{i, j};
-        speaker_opposite_temp = maskers_opposite{i, j};
-        if strcmp(speaker_same_temp(3), 'F')
-            maskers_female_temp(strcmp(maskers_female_temp, speaker_same_temp)) = [];
-            maskers_male_temp(strcmp(maskers_male_temp, speaker_opposite_temp)) = [];
-        else
-            maskers_male_temp(strcmp(maskers_male_temp, speaker_same_temp)) = [];
-            maskers_female_temp(strcmp(maskers_female_temp, speaker_opposite_temp)) = [];
-        end
-    end
+    % back up speakers just in case an speaker did not record a particular
+    % sentence
+    maskers_male_bck = speakers_masker_m(end);
+    maskers_female_bck = speakers_masker_f(end);
     
     for j = 1:num_interferer
         
@@ -107,12 +80,12 @@ for i = 1:num_target
         audio_name_temp = audio_name_same{i, j};
         maskers_name_same{j} = maskers_same{i, j};  %#ok<AGROW>
         txt_name_same{j} = audio_name_temp(8:end-4);  %#ok<AGROW,NASGU>
-        stim_same_temp = readMaskerAudios(root_audios, audio_name_temp, maskers_name_same{j}, maskers_female_temp, maskers_male_temp);
+        stim_same_temp = readMaskerAudios(root_audios, audio_name_temp, maskers_name_same{j}, maskers_female_bck, maskers_male_bck);
         
         audio_name_temp = audio_name_opposite{i, j};
         maskers_name_opposite{j} = maskers_opposite{i, j};  %#ok<AGROW>
         txt_name_opposite{j} = audio_name_temp(8:end-4);  %#ok<AGROW,NASGU>
-        stim_opposite_temp = readMaskerAudios(root_audios, audio_name_temp, maskers_name_opposite{j}, maskers_female_temp, maskers_male_temp);
+        stim_opposite_temp = readMaskerAudios(root_audios, audio_name_temp, maskers_name_opposite{j}, maskers_female_bck, maskers_male_bck);
         
         if j > 1
             if length(stim_same) < length(stim_same_temp)
