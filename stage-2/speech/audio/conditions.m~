@@ -30,6 +30,7 @@ for v = 1:num_visits
         configuration = conds{i};
         snrs = SNRs{i};
         ns = Ns{i}/num_visits;
+        count = sum(ns) + count;
         target_masker(sum(ns), count);
         gender = 'same_gender';
         b_same = filter_param(sum(ns), count, gender, strcat(root_audios, '/target_masker/', gender, '/'), fs);
@@ -48,17 +49,15 @@ for v = 1:num_visits
                         stim_bck = stim_same; b = b_same;
                 end
                 mixture(stim_tar, stim_bck, b, configuration, snrs(j),  int2str(rand_trialnums(num_trial)), target, wordlist, t_onset, fs, rampdur, root_audios, v);
-                info{rand_trialnums(num_trial), 3} = configuration; %#ok<SAGROW>
-                info{rand_trialnums(num_trial), 2} = snrs(j); %#ok<SAGROW>
-                info{rand_trialnums(num_trial), 1} = target; %#ok<SAGROW>
-                info{rand_trialnums(num_trial), 4} = tar_gender; %#ok<SAGROW>
+                info{rand_trialnums(num_trial), 3} = configuration;
+                info{rand_trialnums(num_trial), 2} = snrs(j);
+                info{rand_trialnums(num_trial), 1} = target;
             end
         end
-        count = sum(ns) + count;
     end
     fid = fopen(strcat(root_audios, '/mixture/', 'visit-', num2str(v), '/stimulus-ref.xls'),'wt');
     for i = 1:num_trial
-        fprintf(fid,'%d,%s,%s\n',info{i,1}, info{i,3}, info{i,4});
+        fprintf(fid,'%d,%s\n',info{i,1}, info{i,3});
     end
     fclose(fid);
 end

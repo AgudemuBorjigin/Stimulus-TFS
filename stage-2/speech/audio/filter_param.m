@@ -1,6 +1,6 @@
-function b = filter_param(num_trial, gender, root, fs)
+function b = filter_param(num_trial, count, gender, root, fs)
 for i = 1:num_trial
-    load(strcat(root, 'trial', int2str(num_trial), '.mat'));
+    load(strcat(root, 'trial', int2str(count+num_trial), '.mat'));
     tar_abs{i} = abs(fft(stim_tar)); %#ok<AGROW>
     if gender(1) == 's'
         bck_abs{i} = abs(fft(stim_same)); %#ok<AGROW>
@@ -12,27 +12,16 @@ for i = 1:num_trial
         tar_abs_avg = tar_abs{i};
         bck_abs_avg = bck_abs{i};
     else
-        if length(tar_abs{i}) < length(tar_abs_avg)
-            tar_abs_avg = tar_abs_avg + [tar_abs{i}; zeros(length(tar_abs_avg) - length(tar_abs{i}), 1)];
-        else
-            tar_abs_avg = tar_abs{i} + [tar_abs_avg; zeros(length(tar_abs{i}) - length(tar_abs_avg), 1)];
-        end
-        if length(bck_abs{i}) < length(bck_abs_avg)
-            bck_abs_avg = bck_abs_avg + [bck_abs{i}; zeros(length(bck_abs_avg) - length(bck_abs{i}), 1)];
-        else
-            bck_abs_avg = bck_abs{i} + [bck_abs_avg; zeros(length(bck_abs{i}) - length(bck_abs_avg), 1)];
-        end
+        [tar_abs{i}, tar_abs_avg] = zeroPadding(tar_abs{i}, tar_abs_avg); %#ok<AGROW>
+        
+        [bck_abs{i}, bck_abs_avg] = zeroPadding(bck_abs{i}, bck_abs_avg); %#ok<AGROW>
     end
 end
 
 tar_abs_avg = tar_abs_avg/num_trial;
 bck_abs_avg = bck_abs_avg/num_trial;
 
-if length(tar_abs_avg) < length(bck_abs_avg)
-    tar_abs_avg = [tar_abs_avg; zeros(length(bck_abs_avg) - length(tar_abs_avg), 1)];
-else
-    bck_abs_avg = [bck_abs_avg; zeros(length(tar_abs_avg) - length(bck_abs_avg), 1)];
-end
+[tar_abs_avg, bck_abs_avg] = zeroPadding(tar_abs_avg, bck_abs_avg);
 
 % gain/ratio between target and background
 gain = tar_abs_avg./bck_abs_avg;

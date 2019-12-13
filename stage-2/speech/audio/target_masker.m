@@ -1,35 +1,29 @@
-function target_masker(totaltrials)
+function target_masker(totaltrials, count)
 wordlists = 1:50;
-nlists = numel(wordlists);
 targets = 1:6;
-nwordsperlist = 6;
 
-% CHANGE AS NEEDED: setting random generator seed and state, not needed for
+% Setting random generator seed and state, not needed for
 % different randomization
 % load('s.mat'); rng(s);
 
-targets = targets(randi(nwordsperlist, [1, totaltrials]));
+% this randomization guarentees equal distribution of each element 
+targets = equalDistribution(totaltrials, numel(targets));
+targets = targets(randperm(totaltrials));
 
-% this randomization guarentees equal distribution of each element in
-% wordlists
-if fix(totaltrials/nlists) < 1
-    wordlists = 1:totaltrials;
-else
-    wordlists = repmat(1:nlists, 1, fix(totaltrials/nlists));
-    wordlists = [wordlists, 1:mod(totaltrials,nlists)];
-end
+wordlists = equalDistribution(totaltrials, numel(wordlists));
 wordlists = wordlists(randperm(totaltrials));
 
 % fixed speaker for male and female voice
 speakers_target = {'F1', 'M1'};
-speakers_target = speakers_target(randi(numel(speakers_target), [1, totaltrials]));
+speakers_target_index = equalDistribution(totaltrials, numel(speakers_target));
+speakers_target = speakers_target(speakers_target_index);
+speakers_target = speakers_target(randperm(totaltrials));
 
-% STOPPED HERE - AB: 12/04/2019
 % separately grouping all female and male speakers from Harvard sentences
 root_audios = '/Users/baoagudemu1/Desktop/Lab/Experiment/speechAudiofiles_stage2';
 
-speakers_masker_f = {'NCF011', 'NCF015', 'PNF139', 'PNF142', 'PNF135'};
-speakers_masker_m = {'NCM012', 'NCM017', 'PNM078', 'PNM086', 'PNM082'};
+speakers_masker_f = {'NCF011', 'NCF015', 'PNF139', 'PNF142', 'PNF135', 'NCF012'};
+speakers_masker_m = {'NCM012', 'NCM017', 'PNM078', 'PNM086', 'PNM082', 'NCM015'};
 % assigning masker speakers to the target speakers according to gender
 num_interferer = 4;
 num_target = numel(speakers_target);
@@ -50,16 +44,16 @@ end
 % the names of the txt files of masker sentences across trials
 sentences_files = dir(strcat(root_audios, '/harvard_sentences/transcripts/*.txt'));
 sentences_name = {sentences_files.name};
+sentences_name_index = equalDistribution(totaltrials*num_interferer, numel(sentences_name));
+sentences_name = sentences_name(sentences_name_index);
 for i = 1:num_target
-    sentences_temp = sentences_name(randperm(numel(sentences_name)));
     for j = 1:num_interferer
-        sentences_mix_temp = sentences_temp{j};
+        sentences_mix_temp = sentences_name{(i-1)*num_interferer + j};
         sentences_mix{i, j} = sentences_mix_temp(1:end-4);  %#ok<AGROW> % excluding .txt file extension
     end
 end
 
-% final audio names containing speaker ID and sentence txt file name, for
-% extracting audios
+% final audio names containing speaker ID and sentence txt file name
 for i = 1:num_target
     for j = 1:num_interferer
         audio_name_same{i, j} = strcat(maskers_same{i, j}, '_', sentences_mix{i, j}, '.wav'); %#ok<AGROW>
@@ -69,10 +63,10 @@ end
 
 % mixing audio signals to generate masker
 for i = 1:num_target
-    % back up speakers just in case an speaker did not record a particular
+    % back up speakers just in case a speaker did not record a particular
     % sentence
-    maskers_male_bck = speakers_masker_m(end);
-    maskers_female_bck = speakers_masker_f(end);
+    maskers_male_bck = speakers_masker_m((num_interferer+1):end);
+    maskers_female_bck = speakers_masker_f((num_interferer+1):end);
     
     for j = 1:num_interferer
         
@@ -90,15 +84,13 @@ for i = 1:num_target
         if j > 1
             if length(stim_same) < length(stim_same_temp)
                 stim_same = centering(stim_same_temp, stim_same);
-            elseif length(stim_same) > length(stim_same_temp)
-                stim_same_temp = centering(stim_same, stim_same_temp);
             else
+                stim_same_temp = centering(stim_same, stim_same_temp);
             end
             if length(stim_opposite) < length(stim_opposite_temp)
                 stim_opposite = centering(stim_opposite_temp, stim_opposite);
-            elseif length(stim_opposite) > length(stim_opposite_temp)
-                stim_opposite_temp = centering(stim_opposite, stim_opposite_temp);
             else
+                stim_opposite_temp = centering(stim_opposite, stim_opposite_temp);
             end
             stim_same = stim_same + stim_same_temp;
             stim_opposite = stim_opposite + stim_opposite_temp;
@@ -111,17 +103,18 @@ for i = 1:num_target
     stim_opposite = scaleSound(stim_opposite);
     stim_same = scaleSound(stim_same);
     
-    % extracting and saving audio files for target and masker
+    % extracting audio file for target and saving target and masker
     wordlist = wordlists(i);
     target = targets(i);
     fname_tar = fileDir(root_audios, speakers_target{i}, wordlist, target);
     stim_tar = resample(audioread(fname_tar), 4069, 4000); 
     stim_tar = scaleSound(stim_tar); %#ok<NASGU>
+    tar_gender = speakers_target{i}; %#ok<NASGU>
     
-    savename = [root_audios, '/target_masker/same_gender/trial', num2str(i), '.mat'];
-    save(savename, 'stim_tar', 'stim_same', 'target', 'wordlist', 'txt_name_same', 'maskers_name_same');
-    savename = [root_audios, '/target_masker/opposite_gender/trial', num2str(i), '.mat'];
-    save(savename, 'stim_tar', 'stim_opposite', 'target', 'wordlist', 'txt_name_opposite', 'maskers_name_opposite');
+    savename = [root_audios, '/target_masker/same_gender/trial', num2str(count+i), '.mat'];
+    save(savename, 'stim_tar', 'stim_same', 'target', 'wordlist', 'txt_name_same', 'maskers_name_same', 'tar_gender');
+    savename = [root_audios, '/target_masker/opposite_gender/trial', num2str(count+i), '.mat'];
+    save(savename, 'stim_tar', 'stim_opposite', 'target', 'wordlist', 'txt_name_opposite', 'maskers_name_opposite', 'tar_gender');
 end
 end
 
