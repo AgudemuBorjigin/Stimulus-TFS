@@ -1,5 +1,5 @@
-subj = 'Hari';
-numVisit = 1;
+subj = 'Erica';
+numVisit = 2;
 
 rootPath = '/Users/baoagudemu1/Desktop/Lab/Experiment/stimulus-TFS/stage-2/speech/results/';
 
@@ -8,20 +8,15 @@ plotCond(rootPath, numVisit, subj, 'anechoic');
 plotCond(rootPath, numVisit, subj, 'pitch');
 plotCond(rootPath, numVisit, subj, 'space');
 plotCond(rootPath, numVisit, subj, 'sum');
-plotCond(rootPath, numVisit, subj, 'echo');
-plotCond(rootPath, numVisit, subj, 'echo-pitch');
-plotCond(rootPath, numVisit, subj, 'echo-space');
-plotCond(rootPath, numVisit, subj, 'echo-sum');
-legend('anechoic', 'pitch', 'space', 'sum', 'echo', 'echo-pitch', 'echo-space', 'echo-sum', 'Location', 'Best');
+legend('anechoic', 'pitch', 'space', 'sum', 'Location', 'Best');
 grid on;
 xlabel('SNR (dB)');
 ylabel('Proportion Correct');
 set(gca, 'FontSize', 16);
-legend('anechoic', 'pitch', 'space', 'sum', 'Location', 'Best');
 title(subj);
 %xlim([-25 15]);ylim([0 1]);
 
-%figure;
+figure;
 plotCond(rootPath, numVisit, subj, 'echo');
 plotCond(rootPath, numVisit, subj, 'echo-pitch');
 plotCond(rootPath, numVisit, subj, 'echo-space');

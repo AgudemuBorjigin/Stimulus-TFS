@@ -10,17 +10,17 @@ for v = 1:numVisit
         dataTmp = responseTable(ind, :);
         % for pooling data across conditions 
         if countV == 1
-            [color] = plot_psych(dataTmp, '--', 2, []);
-            %set(get(get(p,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+            [color, p] = plot_psych(dataTmp, '--', 0.5, []);
+            set(get(get(p,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
             dataAll = dataTmp;
         else
-            [~] = plot_psych(dataTmp, '--', 2, color);
-            %set(get(get(p,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+            [~, p] = plot_psych(dataTmp, '--', 0.5, color);
+            set(get(get(p,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
             dataAll = [dataAll; dataTmp]; %#ok<AGROW>
         end
     end
-%     if v == numVisit
-%         plot_psych(dataAll, '-', 2, color);
-%     end
+    if v == numVisit
+        plot_psych(dataAll, '-', 2, color);
+    end
 end
 end
