@@ -44,7 +44,7 @@ for i = 1:num_target
     end
 end
 
-nfilts = 16;
+nfilts = 1;
 for i = 1:num_target
     if ~isempty(strfind(speakers_target{i}, 'F'))
         for j = 1:num_interferer
@@ -60,8 +60,8 @@ for i = 1:num_target
 end
 
 % mixing audio signals to generate masker
-f_low = 80;
-f_high = 16000;
+f_low = 20;
+f_high = 20000;
 for i = 1:num_target
     for j = 1:num_interferer
         stim_same_temp = sig_vocode(audio_names_same{i, j}, fs, f_low, f_high, root_audios);

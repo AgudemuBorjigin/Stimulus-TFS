@@ -1,4 +1,4 @@
-function b = filter_param(num_trial, count, gender, root, fs)
+function b = filter_param(num_trial, count, gender, root)
 for i = 1:num_trial
     load(strcat(root, 'trial', int2str(count+num_trial), '.mat'));
     tar_abs{i} = abs(fft(stim_tar)); %#ok<AGROW>

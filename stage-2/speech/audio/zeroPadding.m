@@ -1,3 +1,4 @@
+% assuming the input vectors are column vectors. 
 function [a, b] = zeroPadding(a, b)
 if length(a) > length(b)
     b = [b; zeros(length(a) - length(b), 1)];

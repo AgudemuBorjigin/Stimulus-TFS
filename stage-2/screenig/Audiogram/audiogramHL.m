@@ -1,5 +1,5 @@
 % this file calibrates subject's response from audiogram into hearng level
-datadir = '/Users/baoagudemu1/Desktop/Lab/Experiment/stimulus-TFS/stage-2/screenig/Audiogram/Results/S132/';
+datadir = '/Users/Agudemu/Desktop/Lab/Experiment/stimulus-TFS/stage-2/screenig/Audiogram/Results/S140/';
 %datadir = '/Users/baoagudemu1/Desktop/Lab/Experiment/DataAnalysis/Data/S199_behavior/Audiogram/';
 %cd '/Users/baoagudemu1/Desktop/Lab/Experiment/DataAnalysis/Data/S199_behavior/Audiogram/';
 ears = dir(strcat(datadir, '*Ear'));
@@ -36,8 +36,6 @@ for i = 1:numel(freqs)
 end
 fclose(fid);
 
-threshHL_loss = [31 34 30 50 70; 33 31 32 40 85];
-
 % plot
 v = [250 -10; 8200 -10; 8200 15; 250 15];
 f = [1 2 3 4];
@@ -65,8 +63,6 @@ h(7) = patch('Faces', f, 'Vertices', v, 'FaceColor', [1 0 0], 'FaceAlpha',transp
 
 h(8) = plot(freqs, threshHL(1, :), '-xb', 'LineWidth', 2, 'MarkerSize', 8);
 h(9) = plot(freqs, threshHL(2, :), '-or', 'LineWidth', 2, 'MarkerSize', 8);
-h(10) = plot(freqs, threshHL_loss(1, :), '--xb', 'LineWidth', 2, 'MarkerSize', 8);
-h(11) = plot(freqs, threshHL_loss(2, :), '--or', 'LineWidth', 2, 'MarkerSize', 8);
 xticks([500 1000 2000 4000 8000]);
 yticks([-10 0 10 20 30 40 50 60 70 80 90 100 110 120]);
 ylim([-10 120]); xlim([250 8200]);
@@ -75,5 +71,5 @@ set(gca,'YDir','reverse'); set(gca,'xaxisLocation','top');
 set(gca, 'FontSize', 12);set(gca, 'LineWidth', 1.5);set(gca, 'GridLineStyle', '--');
 grid on;
 
-label = {'Normal', 'Slight', 'Mild', 'Moderate', 'Moderate-severe', 'Severe', 'Profound', 'Left ear: patient 1', 'Right ear: patient 1', 'Left ear: patient 2', 'Right ear: patient 2'};
+label = {'Normal', 'Slight', 'Mild', 'Moderate', 'Moderate-severe', 'Severe', 'Profound', 'Left ear: patient 1', 'Right ear: patient 1'};
 legend(h, label, 'Location', 'southwest');

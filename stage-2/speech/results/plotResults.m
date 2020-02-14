@@ -1,5 +1,5 @@
-subj = 'Erica';
-numVisit = 2;
+subj = 'Cindy';
+numVisit = 4;
 
 rootPath = '/Users/baoagudemu1/Desktop/Lab/Experiment/stimulus-TFS/stage-2/speech/results/';
 

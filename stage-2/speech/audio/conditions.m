@@ -1,9 +1,9 @@
 % mixing target and masker for different configurations
-fs = 44100;
+fs_sys = 48828;
 rampdur = 0.01;
 t_onset = 0.7;
 % CHANGE AS NEEDED
-root_audios = '/Users/baoagudemu1/Desktop/Lab/Experiment/speechAudiofiles_stage2';
+root_audios = '/Users/Agudemu/Desktop/Lab/Experiment/speechAudiofiles_stage2';
 
 conds = {'echo-pitch', 'echo-space', 'echo', 'echo-sum', 'pitch', 'space', 'anechoic', 'sum'};
 SNRs = {15:-6:-21, 15:-6:-21, 15:-6:-21, 12:-6:-24, 8:-5:-22, 8:-5:-22, 8:-5:-22, 8:-5:-22};
@@ -32,11 +32,11 @@ for v = 1:num_visits
         configuration = conds{i};
         snrs = SNRs{i};
         ns = Ns{i}/num_visits;
-        target_masker(sum(ns), count);
+        target_masker(sum(ns), count, fs_sys, root_audios);
         gender = 'same_gender';
-        b_same = filter_param(sum(ns), count, gender, strcat(root_audios, '/target_masker/', gender, '/'), fs);
+        b_same = filter_param(sum(ns), count, gender, strcat(root_audios, '/target_masker/', gender, '/'));
         gender = 'opposite_gender';
-        b_opposite = filter_param(sum(ns), count, gender, strcat(root_audios, '/target_masker/', gender, '/'), fs);
+        b_opposite = filter_param(sum(ns), count, gender, strcat(root_audios, '/target_masker/', gender, '/'));
         
         for j = 1:numel(snrs)
             for k = 1:ns(j)
@@ -49,7 +49,7 @@ for v = 1:num_visits
                         load(strcat(root_audios, '/target_masker/same_gender/trial', int2str(num_trial), '.mat'));
                         stim_bck = stim_same; b = b_same;
                 end
-                mixture(stim_tar, stim_bck, b, configuration, snrs(j),  int2str(rand_trialnums(num_trial)), target, wordlist, t_onset, fs, rampdur, root_audios, v);
+                mixture(stim_tar, stim_bck, b, configuration, snrs(j),  int2str(rand_trialnums(num_trial)), target, wordlist, t_onset, fs_sys, rampdur, root_audios, v);
                 info{rand_trialnums(num_trial), 3} = configuration; %#ok<SAGROW>
                 info{rand_trialnums(num_trial), 2} = snrs(j); %#ok<SAGROW>
                 info{rand_trialnums(num_trial), 1} = target; %#ok<SAGROW>
