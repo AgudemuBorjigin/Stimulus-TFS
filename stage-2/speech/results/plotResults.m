@@ -1,7 +1,7 @@
-subj = 'Cindy';
-numVisit = 4;
+subj = 'Angel';
+numVisit = 1;
 
-rootPath = '/Users/baoagudemu1/Desktop/Lab/Experiment/stimulus-TFS/stage-2/speech/results/';
+rootPath = '/Users/Agudemu/Desktop/Lab/Experiment/stimulus-TFS/stage-2/speech/results/';
 
 figure;
 plotCond(rootPath, numVisit, subj, 'anechoic');
