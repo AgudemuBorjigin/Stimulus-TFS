@@ -1,7 +1,12 @@
 subj = 'Angel';
 numVisit = 1;
 
-rootPath = '/Users/Agudemu/Desktop/Lab/Experiment/stimulus-TFS/stage-2/speech/results/';
+os = 'Ubuntu';
+if strcmp(os, 'Mac')
+    rootPath = '/Users/Agudemu/Desktop/Lab/Experiment/stimulus-TFS/stage-2/speech/results/';
+else
+    rootPath = '/home/agudemu/Experiment/stimulus-TFS/stage-2/speech/results/';
+end
 
 figure;
 plotCond(rootPath, numVisit, subj, 'anechoic');
