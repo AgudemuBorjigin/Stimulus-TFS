@@ -5,7 +5,7 @@ t_onset = 0.7;
 % CHANGE AS NEEDED
 os = 'Mac'; % shift betrween Mac and Ubuntu
 if strcmp(os, 'Mac')
-    root_audios = '/Users/Agudemu/Desktop/Lab/Experiment/speechAudiofiles_stage2';
+    root_audios = '/Users/Agudemu/Dropbox/Lab/Experiment/speechAudiofiles_stage2';
 elseif strcmp(os, 'Ubuntu')
     root_audios = '/home/agudemu/Experiment/speechAudioFiles_stage2';
 end

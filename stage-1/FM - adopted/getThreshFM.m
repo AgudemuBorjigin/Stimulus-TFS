@@ -32,7 +32,7 @@ try
     fs = 48828.125;
     dur = 0.5; % AB: 750 ms  
     fm = 2; % AB: fm can be either 2 or 10 Hz
-    ramp = 0.005; % AB: gating with 50-ms raised-cosine ramps
+    ramp = 0.005; % AB: gating with 5-ms raised-cosine ramps
     L = 70; % AB: Fixed value at 70 dBSPL
     fdev = 17; % AB: starting frequency deviation value, big enough to make sure the subject understands the task
     stepDown = -1.5; % AB: stepDown from initail fdev 

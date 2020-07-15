@@ -19,7 +19,6 @@ function yci = simulateCI_clicktrain(y, Fs, fs_sig, F0, fmin, fmax, nchans, mask
 % Copyright 2016--2020 Hari Bharadwaj
 % All Rights Reserved
 %---------
-
 % resample input signal to desired frequency 
 y = resample(y, Fs, fs_sig);
 
@@ -28,10 +27,11 @@ y = resample(y, Fs, fs_sig);
 ncams = cams(fmax) - cams(fmin);
 cams_per_chan = ncams / nchans;
 
-f1_cams = cams(fmin) + cams_per_chan * (0: (nchans - 1));
-f1 = invcams(f1_cams);
-f2_cams = f1_cams + cams_per_chan;
-f2 = invcams(f2_cams);
+
+f1_cams = cams(fmin) + cams_per_chan * (0: (nchans - 1)); %% left-edge frequency
+f1 = invcams(f1_cams); %% Equally space CFs on an ERB scale
+f2_cams = f1_cams + cams_per_chan; %% right-edge frequency
+f2 = invcams(f2_cams); %% Equally space CFs on an ERB scale
 
 
 f1 = f1 * 2.0 / Fs;  % Normalize to nyquist rate
@@ -52,7 +52,10 @@ else
 end
 for ch = ch_nums
     [b, a] = butter(3, [f1(ch), f2(ch)]);
-    yfilt = filtfilt(b, a, y(:, 1)); % filtfilt helps remove time delay of filtering
+    % filtfilt helps remove time delay of filtering, different filter bands
+    % have different delays (eg. in the impulse response) hence phase compensation
+    % could help align peaks from different filters
+    yfilt = filtfilt(b, a, y(:, 1)); 
     
     if (f2(ch) - f1(ch))/2 < envcutoff
         tempcutoff = (f2(ch) - f1(ch)) / 2.0;

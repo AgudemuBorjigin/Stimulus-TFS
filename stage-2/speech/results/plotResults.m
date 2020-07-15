@@ -1,7 +1,7 @@
 subj = 'Angel';
 numVisit = 1;
 
-os = 'Ubuntu';
+os = 'Mac';
 if strcmp(os, 'Mac')
     rootPath = '/Users/Agudemu/Desktop/Lab/Experiment/stimulus-TFS/stage-2/speech/results/';
 else
