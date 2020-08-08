@@ -1,60 +1,67 @@
-% converged = 0;
-% respList = [];
-% ITDList = [];
-% trialCount = 0;
-% correctCount = 0;
-% reps = 0; % used for 3 down 1 up
-
-fileRoot = '/Users/Agudemu/Dropbox/Lab/Experiment/stimulus-TFS/stage-2/peripheral/ITD_behavior';
-%%
-ITD_start = 180e-6;
-ITD_factor = 1.25;
-ITD_max = ITD_start * (ITD_factor)^5;
-ITD_min = ITD_start / (ITD_factor)^18;
-
+fileRoot = pwd;
+%% stimulus parameters
 ramp = 0.02; % AB: gating with 20-ms raised-cosine ramps
 fc = 500;
 fs = 100e3; % CHANGE AS NEEDED
-dur = 0.4;
-dur_gap = 0.2;
+dur = 0.5;
+dur_gap = 0.5;
 t = 0:1/fs:dur_gap-1/fs;
 gap = zeros(2, numel(t));
-%L = 70;
 
+% NOTE: ITD here is only for one of two stimulus segments in the "jumpting" stimulus 
+ITD_start =128;
+ITD_factor = 2;
+ITDs = round(ITD_start * (ITD_factor).^(0:-1:-6));
+steps = ITD_start;
+numReps = 15;
+% steps = ITDs; 
+% numReps = 8;
+numSteps = numReps*numel(steps);
+stepsAll = zeros(1, numSteps);
+for i = 1:numReps
+    stepsAll((i-1)*numel(steps)+(1:numel(steps))) = steps;
+end
+stepsAll = stepsAll(randperm(numSteps));
 %%
-ITDs = ITD_start * (ITD_factor).^(5:-1:-18);
-steps = 10:-2:-36; % in dB
-numParams = numel(ITDs);
-fileNames_1 = cell(1, numParams);
-fileNames_2 = cell(1, numParams);
+symbols = ['a':'z' 'A':'Z' '0':'9'];
+fileNames = cell(1, numSteps);
 count = 0;
-for step = steps
+for step = stepsAll
     count = count + 1;
-    % answer is one
-    sig1 = makeITDstim_freqdomain(ITD_start * db2mag(step), 1, fc, fs,...
+    answer = randi(2);
+    if answer == 1
+        lr_sig1 = 1;
+        lr_sig2 = 0;
+    else
+        lr_sig1 = 0;
+        lr_sig2 = 1;
+    end
+    sig1 = makeITDstim_freqdomain(step*1e-6, lr_sig1, fc, fs,...
         dur, ramp);
     
-    sig2 = makeITDstim_freqdomain(ITD_start * db2mag(step), 0, fc, fs,...
-        dur, ramp);
-    sig_one = [sig1'; gap'; sig2'];
+    sig2 = makeITDstim_freqdomain(step*1e-6, lr_sig2, fc, fs,...
+        dur, ramp);   
+    sig = [sig1'; gap'; sig2'];
     
-    wavName_1 = strcat(num2str(step), 'dB_one.wav');
-    fileNames_1{count} = wavName_1;
-    audiowrite(strcat(fileRoot, '/wavFiles/', wavName_1), sig_one/max(abs(sig_one(:))), fs);
-    % answer is two
-    sig1 = makeITDstim_freqdomain(ITD_start * db2mag(step), 1, fc, fs,...
-        dur, ramp);
-    
-    sig2 = makeITDstim_freqdomain(ITD_start * db2mag(step), 0, fc, fs,...
-        dur, ramp);
-    sig_two = [sig1'; gap'; sig2'];
-    
-    wavName_2 = strcat(num2str(step), 'dB_two.wav');
-    fileNames_2{count} = wavName_2;
-    audiowrite(strcat(fileRoot, '/wavFiles/', wavName_2), sig_two/max(abs(sig_two(:))), fs);
+    idx = randi(numel(symbols), [1, 16]);
+    hashString = symbols(idx);
+    wavName = strcat(num2str(step), 'us_', num2str(answer), '_', hashString, '.wav');
+    fileNames{count} = wavName;
+    audiowrite(strcat(fileRoot, '/wavFiles/', wavName), sig/max(abs(sig(:))), fs);
+    if count == 1
+        sig_no_ITD = makeITDstim_freqdomain(0, 0, fc, fs,...
+            dur, ramp);
+        sig_no_ITD = [sig_no_ITD'; gap'];
+        for i = 1:100
+            if i == 1
+                volume = sig_no_ITD;
+            else
+                volume = [volume; sig_no_ITD]; %#ok<AGROW>
+            end
+        end
+        audiowrite(strcat(fileRoot, '/wavFiles/', 'volume.wav'), volume/max(abs(volume(:))), fs);
+    end
 end
 
-T_1 = cell2table(fileNames_1(:));
-writetable(T_1, 'fileNames_1.csv');
-T_2 = cell2table(fileNames_2(:));
-writetable(T_2, 'fileNames_2.csv');
+T = cell2table(fileNames(:));
+writetable(T, strcat(fileRoot, '/wavFiles/', 'fileNames.csv'));

@@ -4,7 +4,7 @@ function yci = simulateCI_clicktrain(y, Fs, fs_sig, F0, fmin, fmax, nchans, mask
 %
 % USAGE:
 %-------
-%  yci = simulateCI_clicktrain(y, Fs, F0, nchans)
+% yci = simulateCI_clicktrain(y, Fs, F0, nchans)
 %
 % y: Input speech waveform (only left channel will be used if stereo)
 % F0: Fundamental frequency of click train
@@ -23,7 +23,6 @@ function yci = simulateCI_clicktrain(y, Fs, fs_sig, F0, fmin, fmax, nchans, mask
 y = resample(y, Fs, fs_sig);
 
 % TO DO: ADD PRE-EMPHESIS FILTER
-
 ncams = cams(fmax) - cams(fmin);
 cams_per_chan = ncams / nchans;
 
@@ -42,8 +41,6 @@ envcutoff = 70 * 2.0/Fs;
 [benv, aenv] = butter(2, envcutoff); %2nd order BW
 
 % Getting ready for windowing and sinusoid generation
-
-
 yci = 0;
 if masker == 1
     ch_nums = ch_num;
@@ -76,7 +73,7 @@ for ch = ch_nums
     end
     % Add noise to carrier to improve fricative and plosives without
     % affecting low-frequency TFS (so only add above 1500 Hz).
-    if f1(ch) > 1500.0 * 2.0/Fs
+    if f1(ch) > 1200.0 * 2.0/Fs
         SNR = 20;
         factor  = db2mag(-1 * SNR);
         carr = carr + randn(size(yenv))*factor;
@@ -86,16 +83,5 @@ for ch = ch_nums
     ych = ych * sqrt(mean(yfilt.^2)) / sqrt(mean(ych.^2));
     yci = yci + ych;
 end
-    yci = rampsound(yci, Fs, 0.05);
+    yci = rampsound(yci, Fs, 0.02);
 end
-
-
-function E = cams(f)
-E = 21.4 * log10(0.00437 * f + 1);
-end
-
-function f = invcams(E)
-f = (10.^(E/21.4) - 1)/0.00437;
-end
-
-

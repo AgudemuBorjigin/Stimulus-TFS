@@ -1,67 +1,67 @@
-% converged = 0; % flag to determine when to stop getting threshold
-% respList = [];
-% fdevList = [];
-% trialCount = 0;
-% correctCount = 0;
-
-% Nup = 3; % Weighted 1-up-1down with weights of 3:1
-% fdev_step_down = db2mag(-4)
-% fdev_step_up = db2mag(-fdev_step_down) * Nup
-% NmaxTrials = 80;
-% NminTrials = 20;
-% target = (randperm(NmaxTrials) > NmaxTrials/2); % randomizing target (containing FM)
-fileRoot = '/Users/Agudemu/Dropbox/Lab/Experiment/stimulus-TFS/stage-2/peripheral/binauralFM';
+fileRoot = pwd;
 %%
-fdev_step = 1; 
-fdev_start = 16;
-fdev_max = 20;
-fdev_min = 0;
-ramp = 0.025; % gating with 25-ms raised-cosine ramps
+ramp = 0.02; % gating with 25-ms raised-cosine ramps
 fc = 500;
 fm = 2;
 fs = 48828;
 dur = 0.5;
-% L = 70;
 t = 0:1/fs:dur-1/fs;
 gap = zeros(2, numel(t));
-
-fdevs = fdev_min:fdev_step:fdev_max;
-steps = 2:-2:-24;
-numParams = numel(steps);
-if rem(numParams, 2) == 0
-    dev_dir = [ones(1, numParams/2), -1*ones(1, numParams/2)];
-else
-    dev_dir = [ones(1, (numParams+1)/2), -1*ones(1, (numParams-1)/2)];
+ 
+fdev_max = 3.2;
+FM_factor = 2;
+% steps = fdev_max * FM_factor.^(0:-1:-5);
+% numReps = 8;
+steps = fdev_max;
+numReps = 15;
+numSteps = numReps*numel(steps);
+stepsAll = zeros(1, numSteps);
+for i = 1:numReps
+    stepsAll((i-1)*numel(steps)+(1:numel(steps))) = steps;
 end
-dev_dir = dev_dir(randperm(numParams)); % randomizing target (containing FM)
+stepsAll = stepsAll(randperm(numSteps));
 %%
-fileNames_1 = cell(1, numParams);
-fileNames_2 = cell(1, numParams);
+fileNames = cell(1, numSteps);
 count = 0;
-for step = steps
+symbols = ['a':'z' 'A':'Z' '0':'9'];
+for step = stepsAll
     count = count + 1;
-    dir = dev_dir(count);
-    sig_left = makeFMstim_binaural(dir, fdev_start * db2mag(step), fc, fs, fm,...
+    dirs = [-1, 1];
+    dir = dirs(randi(2));
+    answer = randi(2);
+    % target
+    sig_left = makeFMstim_binaural(dir, step, fc, fs, fm,...
         dur, ramp);
-    sig_right = makeFMstim_binaural(-1 * dir, fdev_start * db2mag(step), fc, fs, fm,...
+    sig_right = makeFMstim_binaural(-1 * dir, step, fc, fs, fm,...
         dur, ramp);
     sig_tar = [sig_left; sig_right];
+    % control
     sig_pure = makeFMstim_binaural(dir, 0, fc, fs, fm, dur, ramp);
     sig_ref = [sig_pure; sig_pure];
-    % target = 1 : left button
-    tar_1 = [sig_tar'; gap'; sig_ref'];
-    wavName_1 = strcat(num2str(step), 'dB_one.wav');
-    fileNames_1{count} = wavName_1;
-    audiowrite(strcat(fileRoot, '/wavFiles/', wavName_1), tar_1/max(abs(tar_1(:))), fs);
-    % target = 2 : right button
-    tar_2 = [sig_ref'; gap'; sig_tar'];
-    wavName_2 = strcat(num2str(step), 'dB_two.wav');
-    fileNames_2{count} = wavName_2;
-    audiowrite(strcat(fileRoot, '/wavFiles/', wavName_2), tar_2/max(abs(tar_2(:))), fs);
+    if answer == 1
+        % target = 1 : left button
+        tar = [sig_tar'; gap'; sig_ref'];
+    else
+        % target = 2 : right button
+        tar = [sig_ref'; gap'; sig_tar'];
+    end
+    idx = randi(numel(symbols), [1, 16]);
+    hashString = symbols(idx);
+    wavName = strcat(num2str(step), 'Hz_', num2str(answer), '_', hashString, '.wav');
+    fileNames{count} = wavName;
+    audiowrite(strcat(fileRoot, '/wavFiles/', wavName), tar/max(abs(tar(:))), fs);
+    if count == 1
+        sig_no_FM = [sig_ref'; gap'];
+        for i = 1:100
+            if i == 1
+                volume = sig_no_FM;
+            else
+                volume = [volume; sig_no_FM]; %#ok<AGROW>
+            end
+        end
+        audiowrite(strcat(fileRoot, '/wavFiles/', 'volume.wav'), volume/max(abs(volume(:))), fs);
+    end
 end
-
-T_1 = cell2table(fileNames_1(:));
-writetable(T_1, 'fileNames_1.csv');
-T_2 = cell2table(fileNames_2(:));
-writetable(T_2, 'fileNames_2.csv');
+T = cell2table(fileNames(:));
+writetable(T, strcat(fileRoot, '/wavFiles/', 'fileNames.csv'));
 

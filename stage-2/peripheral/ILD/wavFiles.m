@@ -1,46 +1,63 @@
-% converged = 0; % flag to determine when to stop getting threshold
-% respList = [];
-% ILDList = [];
-% trialCount = 0;
-% correctCount = 0;
-% reps = 0;
-fileRoot = '/Users/Agudemu/Dropbox/Lab/Experiment/stimulus-TFS/stage-2/peripheral/ILD';
+fileRoot = pwd;
 
-fs = 200e3;
-dur = 0.4;
-dur_gap = 0.2;
-ramp = 0.02;
+fs = 48828;
 fc = 6000;
 
+dur = 0.5;
+dur_gap = 0.5;
 t = 0:(1/fs):(dur - 1/fs);
-t_gap = 0:(1/fs):(dur_gap - 1/fs);
-sig = sin(2*pi*fc*t);
-sig = int32(2^31 * rampsound(sig, fs, ramp));
-gap = int32(zeros(2, numel(t_gap)));
 
-L = 70; % reference level
-ILD = 20; % starting ILD value in dB
-ILDs = 30:-0.5:0;
-fileNames_1 = cell(1, numel(ILDs));
-fileNames_2 = cell(1, numel(ILDs));
+ramp = 0.02;
+sig = sin(2*pi*fc*t);
+sig = rampsound(sig, fs, ramp);
+gap = zeros(2, numel(t));
+
+factor = 2;
+ILD_max = 3.2;
+ILDs = ILD_max * (factor.^(0:-1:-5));
+% steps = ILDs;
+% numReps = 8;
+steps = ILD_max;
+numReps = 15;
+numParams = numel(steps);
+numSteps = numReps*numParams;
+stepsAll = zeros(1, numSteps);
+for i = 1:numReps
+    stepsAll((i-1)*numel(steps)+(1:numel(steps))) = steps;
+end
+stepsAll = stepsAll(randperm(numSteps));
+fileNames = cell(1, numSteps);
 count = 0;
-for step = ILDs
+symbols = ['a':'z' 'A':'Z' '0':'9'];
+for step = stepsAll
     count = count + 1;
+    answer = randi(2);
     ILD_left = [sig; sig * db2mag(-step)];
     ILD_right = [sig * db2mag(-step); sig];
-    % answer is one (left)
-    sig_one = [ILD_left'; gap'; ILD_right'];
-    wavName_1 = strcat(num2str(step), 'dB_one.wav');
-    fileNames_1{count} = wavName_1;
-    audiowrite(strcat(fileRoot, '/wavFiles/', wavName_1), sig_one, fs, 'BitsPerSample', 32);
-    % answer is two
-    sig_two = [ILD_right'; gap'; ILD_left'];
-    wavName_2 = strcat(num2str(step), 'dB_two.wav');
-    fileNames_2{count} = wavName_2;
-    audiowrite(strcat(fileRoot, '/wavFiles/', wavName_2), sig_two, fs, 'BitsPerSample', 32);
+    if answer == 1
+        % answer is one (left)
+        sig_mix = [ILD_left'; gap'; ILD_right'];
+    else
+        % answer is two
+        sig_mix = [ILD_right'; gap'; ILD_left'];
+    end 
+    idx = randi(numel(symbols), [1, 16]);
+    hashString = symbols(idx);
+    wavName = strcat(num2str(step), 'dB_', num2str(answer), '_', hashString, '.wav');
+    fileNames{count} = wavName;
+    audiowrite(strcat(fileRoot, '/wavFiles/', wavName), sig_mix/max(abs(sig_mix(:))), fs);
+    if count == 1
+        sig_no_ILD = [[sig; sig]'; gap'];
+        for i = 1:100
+            if i == 1
+                volume = sig_no_ILD;
+            else
+                volume = [volume; sig_no_ILD]; %#ok<AGROW>
+            end
+        end
+        audiowrite(strcat(fileRoot, '/wavFiles/', 'volume.wav'), volume/max(abs(volume(:))), fs);
+    end
 end
 
-T_1 = cell2table(fileNames_1(:));
-writetable(T_1, 'fileNames_1.csv');
-T_2 = cell2table(fileNames_2(:));
-writetable(T_2, 'fileNames_2.csv');
+T = cell2table(fileNames(:));
+writetable(T, strcat(fileRoot, '/wavFiles/', 'fileNames.csv'));
