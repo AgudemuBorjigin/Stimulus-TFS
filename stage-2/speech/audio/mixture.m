@@ -53,6 +53,8 @@ switch configuration
         mix_left  = rampsound(mix_left, fs, rampdur);
         mix_right  = rampsound(mix_right, fs, rampdur);
         y = [sigNorm(mix_left), sigNorm(mix_right)];
+    case {'target'}
+        y = [rampsound(stim_tar_left, fs, rampdur), rampsound(stim_tar_right, fs, rampdur)];
 end
 savename = [root_audios, '/mixture/', strcat('visit-', num2str(v)), '/trial', id_trial, '.mat'];
 save(savename, 'configuration', 'y', 'SNR', 'target', 'wordlist');

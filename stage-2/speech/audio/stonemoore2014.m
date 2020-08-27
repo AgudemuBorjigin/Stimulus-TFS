@@ -12,8 +12,8 @@ end
 %% Matching Stone & Moore 2014 processing strategy
 
 nfilts = 28;
-f_low = 50;
-f_high = 7850;
+f_low = 1;
+f_high = 8000;
 
 % Equally space filter edges on an ERB scale
 edges = invcams(linspace(cams(f_low), cams(f_high), nfilts+1));
@@ -62,11 +62,11 @@ for k = 2:2:nfilts
     masker_even = masker_even + tone;
 end
 factor = db2mag(-1*SNR);
-y = [sigNorm(rampsound(y_odd + factor*masker_odd, fs, rampdur)),...
-    sigNorm(rampsound(y_even + masker_even*factor, fs, rampdur))];
+y = [rampsound(y_odd + factor*masker_odd, fs, rampdur),...
+    rampsound(y_even + masker_even*factor, fs, rampdur)];
 
-%targetrms = rms(sum(bm(rmssamps, :), 2));
-%y = y * rmsset/targetrms;
+targetrms = rms(sum(bm(rmssamps, :), 2));
+y = y * rmsset/targetrms;
 
 %% Play sound
 if playsound

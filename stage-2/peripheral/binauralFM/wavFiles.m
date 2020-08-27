@@ -10,10 +10,10 @@ gap = zeros(2, numel(t));
  
 fdev_max = 3.2;
 FM_factor = 2;
-% steps = fdev_max * FM_factor.^(0:-1:-5);
-% numReps = 8;
-steps = fdev_max;
-numReps = 15;
+steps = fdev_max * FM_factor.^(0:-1:-5);
+numReps = 8;
+% steps = fdev_max;
+% numReps = 15;
 numSteps = numReps*numel(steps);
 stepsAll = zeros(1, numSteps);
 for i = 1:numReps

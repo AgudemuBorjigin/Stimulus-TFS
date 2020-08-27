@@ -73,7 +73,7 @@ for ch = ch_nums
     end
     % Add noise to carrier to improve fricative and plosives without
     % affecting low-frequency TFS (so only add above 1500 Hz).
-    if f1(ch) > 1200.0 * 2.0/Fs
+    if f1(ch) > 1500.0 * 2.0/Fs
         SNR = 20;
         factor  = db2mag(-1 * SNR);
         carr = carr + randn(size(yenv))*factor;

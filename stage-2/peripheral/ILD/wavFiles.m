@@ -1,7 +1,7 @@
 fileRoot = pwd;
 
 fs = 48828;
-fc = 6000;
+fc = 4000;
 
 dur = 0.5;
 dur_gap = 0.5;
