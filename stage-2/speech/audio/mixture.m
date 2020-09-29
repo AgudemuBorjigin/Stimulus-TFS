@@ -18,9 +18,11 @@ switch configuration
         if strcmp(configuration, 'echo') || strcmp(configuration, 'echo-pitch')
             [h, fs_rev] = audioread('BarMonsieurRicard.wav');
             h = resample(h, fs, fs_rev); % resample to 48828 Hz
-            mix_left = reverberation(mix_left, h(:,1), fs, t_mskonset);
-            mix_right = reverberation(mix_right, h(:,2), fs, t_mskonset);
+            mix_left = sigNorm(conv(mix_left, h(:,1)));
+            mix_right = sigNorm(conv(mix_right, h(:,2)));
         end
+        mix_left = mix_left(1:(length(stim_tar) + 2500), 1);
+        mix_right = mix_right(1:(length(stim_tar) + 2500), 1);
         mix_left  = rampsound(mix_left, fs, rampdur);
         mix_right  = rampsound(mix_right, fs, rampdur);
         y = [sigNorm(mix_left), sigNorm(mix_right)];
@@ -30,9 +32,11 @@ switch configuration
         if contains(configuration, 'echo')
             [h, fs_rev] = audioread('BarMonsieurRicard.wav');
             h = resample(h, fs, fs_rev); % resample to 48828 Hz
-            mix_left = reverberation(mix_left, h(:,1), fs, t_mskonset);
-            mix_right = reverberation(mix_right, h(:,2), fs, t_mskonset);
+            mix_left = sigNorm(conv(mix_left, h(:,1)));
+            mix_right = sigNorm(conv(mix_right, h(:,2)));
         end
+        mix_left = mix_left(1:(length(stim_tar) + 2500), 1);
+        mix_right = mix_right(1:(length(stim_tar) + 2500), 1);
         mix_left  = rampsound(mix_left, fs, rampdur);
         mix_right  = rampsound(mix_right, fs, rampdur);
         y = [sigNorm(mix_left), sigNorm(mix_right)];
@@ -41,8 +45,12 @@ switch configuration
         if contains(configuration, 'echo')
             [h, fs_rev] = audioread('BarMonsieurRicard.wav');
             h = resample(h, fs, fs_rev); % resample to 48828 Hz
-            mix_left = reverberation(mix(:,1), h(:,1), fs, t_mskonset);
-            mix_right = reverberation(mix(:,2), h(:,2), fs, t_mskonset);
+            mix_left = sigNorm(conv(mix(:,1), h(:,1)));
+            mix_right = sigNorm(conv(mix(:,2), h(:,2)));
+            mix_left = mix_left(1:(length(stim_tar) + 2500), 1);
+            mix_right = mix_right(1:(length(stim_tar) + 2500), 1);
+            mix_left  = rampsound(mix_left, fs, rampdur);
+            mix_right  = rampsound(mix_right, fs, rampdur);
             y = [mix_left, mix_right];
         else
             y = mix;
@@ -50,6 +58,8 @@ switch configuration
     case {'ref'}
         mix_left = stim_tar_left + stim_masker_left;
         mix_right = stim_tar_right + stim_masker_right;
+        mix_left = mix_left(1:(length(stim_tar) + 2500), 1);
+        mix_right = mix_right(1:(length(stim_tar) + 2500), 1);
         mix_left  = rampsound(mix_left, fs, rampdur);
         mix_right  = rampsound(mix_right, fs, rampdur);
         y = [sigNorm(mix_left), sigNorm(mix_right)];
