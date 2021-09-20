@@ -1,4 +1,4 @@
-function y  = stonemoore2014(x, onset, fs, SNR, rampdur, rmsset, playsound)
+function [y, target, masker]  = stonemoore2014(x, onset, fs, SNR, rampdur, rmsset, playsound)
 
 % RETURNS STEREO SIGNAL WITH RMS(L+R) = rmsset
 
@@ -64,9 +64,11 @@ end
 factor = db2mag(-1*SNR);
 y = [rampsound(y_odd + factor*masker_odd, fs, rampdur),...
     rampsound(y_even + masker_even*factor, fs, rampdur)];
-
 targetrms = rms(sum(bm(rmssamps, :), 2));
 y = y * rmsset/targetrms;
+% for model
+masker = masker_odd + masker_even;
+target = y_odd + y_even;
 
 %% Play sound
 if playsound

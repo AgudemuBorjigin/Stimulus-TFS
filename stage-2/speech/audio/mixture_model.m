@@ -1,4 +1,4 @@
-function mixture(stim_tar, stim_masker, b, configuration, SNR, id_trial, target, wordlist, t_mskonset, fs, rampdur, root_audios, v)
+function mixture_model(stim_tar, stim_masker, b, configuration, SNR, id_trial, target, wordlist, t_mskonset, fs, rampdur, root_audios, v)
 normval = 0.01;
 stim_masker = filter(b, 1, stim_masker);
 % preprocessing: normalization, ramping masker, onset delay for maskers,
@@ -74,6 +74,19 @@ switch configuration
     case {'target'}
         y = [rampsound(stim_tar_left, fs, rampdur), rampsound(stim_tar_right, fs, rampdur)];
 end
+%% for model
+if contains(configuration, 'noise')
+    [~, stim_tar_model, stim_masker_model] = stonemoore2014(stim_tar, t_mskonset, fs, SNR, rampdur);
+    stim_masker_model = singleChan(stim_masker_model, normval, 0, t_mskonset, fs, rampdur, 'masker');
+    stim_tar_model = singleChan(stim_tar_model, normval, 0, t_mskonset, fs, rampdur, 'target');
+    stim_tar_model  = rampsound(stim_tar_model, fs, rampdur); 
+else
+    stim_masker_model = singleChan(stim_masker, normval, 0, t_mskonset, fs, rampdur, 'masker');
+    stim_tar_model = singleChan(stim_tar, normval, 0, t_mskonset, fs, rampdur, 'target');
+    stim_tar_model  = rampsound(stim_tar_model, fs, rampdur);       
+end
+[stim_masker_model, stim_tar_model] = zeroPadding(stim_masker_model, stim_tar_model);
+%% save
 savename = [root_audios, '/mixture/', strcat('visit-', num2str(v)), '/trial', id_trial, '.mat'];
-save(savename, 'configuration', 'y', 'SNR', 'target', 'wordlist');
+save(savename, 'configuration', 'y', 'SNR', 'target', 'wordlist', 'stim_tar_model', 'stim_masker_model');
 end

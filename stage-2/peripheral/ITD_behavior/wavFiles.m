@@ -1,4 +1,6 @@
 fileRoot = pwd;
+folderName = 'wavFiles';
+demo = 0;
 %% stimulus parameters
 ramp = 0.02; % AB: gating with 20-ms raised-cosine ramps
 fc = 500;
@@ -12,10 +14,13 @@ gap = zeros(2, numel(t));
 ITD_start =128;
 ITD_factor = 2;
 ITDs = round(ITD_start * (ITD_factor).^(0:-1:-6));
-% steps = ITD_start;
-% numReps = 15;
-steps = ITDs; 
-numReps = 8;
+if demo
+    steps = ITD_start;
+    numReps = 15;
+else
+    steps = ITDs;
+    numReps = 8;
+end
 numSteps = numReps*numel(steps);
 stepsAll = zeros(1, numSteps);
 for i = 1:numReps
@@ -47,7 +52,7 @@ for step = stepsAll
     hashString = symbols(idx);
     wavName = strcat(num2str(step), 'us_', num2str(answer), '_', hashString, '.wav');
     fileNames{count} = wavName;
-    audiowrite(strcat(fileRoot, '/wavFiles/', wavName), sig/max(abs(sig(:))), fs);
+    audiowrite(strcat(fileRoot, '/', folderName, '/', wavName), sig/max(abs(sig(:))), fs);
     if count == 1
         sig_no_ITD = makeITDstim_freqdomain(0, 0, fc, fs,...
             dur, ramp);
@@ -59,9 +64,9 @@ for step = stepsAll
                 volume = [volume; sig_no_ITD]; %#ok<AGROW>
             end
         end
-        audiowrite(strcat(fileRoot, '/wavFiles/', 'volume.wav'), volume/max(abs(volume(:))), fs);
+        audiowrite(strcat(fileRoot, '/', folderName, '/volume.wav'), volume/max(abs(volume(:))), fs);
     end
 end
 
 T = cell2table(fileNames(:));
-writetable(T, strcat(fileRoot, '/wavFiles/', 'fileNames.csv'));
+writetable(T, strcat(fileRoot, '/', folderName, '/fileNames.csv'));

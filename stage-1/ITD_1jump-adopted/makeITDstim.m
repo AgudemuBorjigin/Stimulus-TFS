@@ -48,13 +48,11 @@ if TFSorENV == 'TFS'
     left_TFS = left_TFS/rms(left_TFS);
     left_TFS = scaleSound(left_TFS);
     out = [left_TFS;right_TFS];
-    
-    
 %     index = fs*(1/fm)*floor((2/3)*duration/(1/fm));
 %     plot(t(1:index),right_TFS(1:index),'r','LineWidth',2);
 %     hold on;
 %     plot(t(index+1:end),left_TFS(index+1:end),'b','LineWidth',2);
-
+% 
 %     plot(t,right_TFS,'r','LineWidth',2);
 %     hold on;
 %     plot(t,left_TFS,'b','LineWidth',2);

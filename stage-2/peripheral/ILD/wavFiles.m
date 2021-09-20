@@ -1,5 +1,7 @@
 fileRoot = pwd;
-
+folderName = 'wavFiles';
+demo = 0;
+%%
 fs = 48828;
 fc = 4000;
 
@@ -15,10 +17,13 @@ gap = zeros(2, numel(t));
 factor = 2;
 ILD_max = 3.2;
 ILDs = ILD_max * (factor.^(0:-1:-5));
-% steps = ILDs;
-% numReps = 8;
-steps = ILD_max;
-numReps = 15;
+if demo
+    steps = ILD_max;
+    numReps = 15;
+else
+    steps = ILDs;
+    numReps = 8;
+end
 numParams = numel(steps);
 numSteps = numReps*numParams;
 stepsAll = zeros(1, numSteps);
@@ -45,7 +50,7 @@ for step = stepsAll
     hashString = symbols(idx);
     wavName = strcat(num2str(step), 'dB_', num2str(answer), '_', hashString, '.wav');
     fileNames{count} = wavName;
-    audiowrite(strcat(fileRoot, '/wavFiles/', wavName), sig_mix/max(abs(sig_mix(:))), fs);
+    audiowrite(strcat(fileRoot, '/', folderName, '/', wavName), sig_mix/max(abs(sig_mix(:))), fs);
     if count == 1
         sig_no_ILD = [[sig; sig]'; gap'];
         for i = 1:100
@@ -55,9 +60,9 @@ for step = stepsAll
                 volume = [volume; sig_no_ILD]; %#ok<AGROW>
             end
         end
-        audiowrite(strcat(fileRoot, '/wavFiles/', 'volume.wav'), volume/max(abs(volume(:))), fs);
+        audiowrite(strcat(fileRoot, '/', folderName, '/volume.wav'), volume/max(abs(volume(:))), fs);
     end
 end
 
 T = cell2table(fileNames(:));
-writetable(T, strcat(fileRoot, '/wavFiles/', 'fileNames.csv'));
+writetable(T, strcat(fileRoot, '/', folderName, '/fileNames.csv'));

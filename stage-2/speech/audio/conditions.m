@@ -10,27 +10,28 @@ elseif strcmp(os, 'Ubuntu')
     root_audios = '/home/agudemu/Experiment/speechAudioFiles_stage2';
 end
 praat = 1;
-% conds = {'anechoic'};
-% SNRs = {0};
-% Ns = {1};
-% conds = {'ref', 'echo-ref'...
-%     'noise', 'echo-noise',...
-%     'echo-pitch', 'echo-space', 'echo-sum', 'echo',...
-%     'pitch', 'space', 'sum', 'anechoic'};
-% SNRs = {10, 10, 10, 10, 14, 14, 14, 14, 12, 12, 12, 12};
-% Ns = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
-% SNRs = {10:-6:-14, 10:-6:-14, ...
-%         14:-8:-18, 14:-9:-22, ...
-%         18:-8:-14, 18:-7:-10, 18:-8:-14, 18:-6:-6, ...
-%         14:-7:-14, 16:-8:-16, 14:-8:-18, 14:-7:-14};
+model = 1;
+% conds = {'echo-ref'};
+% SNRs = {14:-6:-10};
+% Ns = {[4, 4, 4, 4, 4]};
+conds = {'ref', 'echo-ref'...
+    'noise', 'echo-noise',...
+    'echo-pitch', 'echo-space', 'echo-sum', 'echo',...
+    'pitch', 'space', 'sum', 'anechoic'};
+SNRs = {12, 14, 12, 14, 14, 14, 14, 14, 12, 12, 12, 14};
+Ns = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
+% SNRs = {12:-6:-12, 14:-6:-10, ...
+%         12:-7:-16, 14:-7:-14, ...
+%         14:-6:-10, 14:-6:-10, 14:-6:-10, 14:-6:-10, ...
+%         12:-6:-12, 12:-6:-12, 12:-7:-16, 14:-6:-10};
 % Ns = {[4, 4, 4, 4, 4], [4, 4, 4, 4, 4], ...
 %       [4, 4, 4, 4, 4], [4, 4, 4, 4, 4], ...
 %       [4, 4, 4, 4, 4], [4, 4, 4, 4, 4], [4, 4, 4, 4, 4], [4, 4, 4, 4, 4], ...
 %       [4, 4, 4, 4, 4], [4, 4, 4, 4, 4], [4, 4, 4, 4, 4], [4, 4, 4, 4, 4]};
-conds = {'pitch', 'space', 'anechoic'};
-SNRs = {12:-6:-12, 12:-6:-12, 12:-6:-12};
-Ns = {[10, 10, 10, 10, 10], [10, 10, 10, 10, 10], [10, 10, 10, 10, 10]};
-% SNRs = {12, 12, 12};
+% conds = {'echo-pitch', 'echo-space', 'echo'};
+% SNRs = {14:-6:-10, 14:-6:-10, 14:-6:-10};
+% Ns = {[10, 10, 10, 10, 10], [10, 10, 10, 10, 10], [10, 10, 10, 10, 10]};
+% SNRs = {14, 14, 14};
 % Ns = {5, 5, 5};
 
 num_total = 0;
@@ -61,7 +62,7 @@ for v = 1:num_visits
                     case {'echo', 'echo-space', 'anechoic', 'space', 'echo-noise', 'noise', 'target'}
                         load(strcat(root_audios, '/target_masker/same_gender/trial', int2str(num_trial), '.mat'));
                         stim_bck = stim_same;
-                    case {'ref'}
+                    case {'ref', 'echo-ref'}
                         load(strcat(root_audios, '/target_masker/intact_same_gender/trial', int2str(num_trial), '.mat'));
                         stim_bck = stim_intact_same; 
                 end
@@ -78,7 +79,11 @@ for v = 1:num_visits
                         stim_tar = stim_tar_vocoded;
                     end
                 end
-                mixture(stim_tar, stim_bck, b, configuration, snrs(j),  int2str(rand_trialnums(num_trial)), target, wordlist, t_onset, fs_sys, rampdur, root_audios, v);
+                if model
+                    mixture_model(stim_tar, stim_bck, b, configuration, snrs(j),  int2str(rand_trialnums(num_trial)), target, wordlist, t_onset, fs_sys, rampdur, root_audios, v);
+                else
+                    mixture(stim_tar, stim_bck, b, configuration, snrs(j),  int2str(rand_trialnums(num_trial)), target, wordlist, t_onset, fs_sys, rampdur, root_audios, v); %#ok<UNRCH>
+                end
                 %% for keeping track of stimulus config information
                 info{rand_trialnums(num_trial), 3} = configuration; %#ok<SAGROW>
                 info{rand_trialnums(num_trial), 2} = snrs(j); %#ok<SAGROW>
